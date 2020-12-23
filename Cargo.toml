@@ -1,0 +1,94 @@
+[package]
+name = "youtrack-with-gitlab-integration"
+version = "0.1.0"
+license = "GPL-3.0"
+authors = ["Sergey <som>"]
+edition = "2018"
+
+[alias]
+b = "build"
+br = "build --release"
+c = "check"
+t = "test"
+rd = "systemfd --no-pid -s http::3000 -- cargo watch -x run"
+rr = "run --release --package Image-loading-API --bin web-app"
+
+[build-dependencies]
+rustc_version = "0.2"
+tempfile = "3.1"
+
+[dev-dependencies]
+pretty_assertions = "0.1"
+tempfile = "3.1"
+listenfd = "0.3.3"
+
+[[bin]]
+name = "web-app"
+path = "app/src/main.rs"
+
+[profile.release]
+opt-level = 3
+debug = false
+debug-assertions = false
+overflow-checks = false
+lto = false
+panic = 'unwind'
+incremental = false
+codegen-units = 16
+rpath = false
+
+[profile.dev]
+opt-level = 0
+debug = true
+debug-assertions = true
+overflow-checks = true
+lto = false
+panic = 'unwind'
+incremental = true
+codegen-units = 256
+rpath = false
+
+
+[workspace]
+# This should only list projects that are not
+# in the dependency tree in any other way
+# (i.e. pretty much only standalone CLI tools)
+members = [
+    "sdk/git-tools",
+    "sdk/gitlab-tools",
+    "sdk/youtrack-tools",
+    "sdk/utils/git-utils",
+]
+
+
+[dependencies]
+git-tools = { path = "./sdk/git-tools" }
+gitlab-tools = { path = "./sdk/gitlab-tools" }
+youtrack-tools = { path = "./sdk/youtrack-tools" }
+
+lazy_static = "*"
+config = "*"
+
+# serde
+serde = { version = "1.0.117", features = ["derive"] }
+serde_json = "*"
+
+# tokio + futures
+futures = "*"
+tokio = { version = "0.2.23", features = ["full"] }
+tokio-util = { version = "*", features = ["full"] }
+#tokio-util = { version = "*", features = ["full"] }
+
+# Types
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "0.8", features = ["serde", "v4"] }
+
+log = "^0.4.8"
+env_logger = "0.8"
+
+# actix
+listenfd = "0.3.3"
+qstring = "0.7.2"
+
+
+
