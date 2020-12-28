@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  youtrack:
+    image: jetbrains/youtrack:2020.6.1099
+    ports:
+      - "10100:8080"
+    volumes:
+      - ./youtrack_data:/opt/youtrack/data
+      - ./youtrack_conf:/opt/youtrack/conf
+      - ./youtrack_logs:/opt/youtrack/logs
+      - ./youtrack_backups:/opt/youtrack/backups
