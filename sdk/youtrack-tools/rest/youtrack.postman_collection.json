@@ -1,0 +1,148 @@
+{
+	"variables": [],
+	"info": {
+		"name": "youtrack",
+		"_postman_id": "2d0e5254-07e5-8145-db76-1c1bd85b39d4",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "projects",
+			"request": {
+				"url": {
+					"raw": "http://localhost:10100/api/admin/projects?fields=id,name&query=Simple",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "10100",
+					"path": [
+						"api",
+						"admin",
+						"projects"
+					],
+					"query": [
+						{
+							"key": "fields",
+							"value": "id,name",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "query",
+							"value": "Simple",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer perm:c2VnZQ==.NDUtMA==.PNyYK9i6rvgQ3fr3SK5Dcqjzn5j5Wn",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "project",
+			"request": {
+				"url": {
+					"raw": "http://localhost:10100/api/admin/projects/0-2?fields=name,shortName,description,issues,issues(summary,description,customFields(value(name)))",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "10100",
+					"path": [
+						"api",
+						"admin",
+						"projects",
+						"0-2"
+					],
+					"query": [
+						{
+							"key": "fields",
+							"value": "name,shortName,description,issues,issues(summary,description,customFields(value(name)))",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer perm:c2VnZQ==.NDUtMA==.PNyYK9i6rvgQ3fr3SK5Dcqjzn5j5Wn",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "get project by id"
+			},
+			"response": []
+		},
+		{
+			"name": "issues: change status",
+			"request": {
+				"url": {
+					"raw": "http://localhost:10100/api/issues/2-20/fields/107-14?$top=-1&fields=$type,id,value($type,id,name,ordinal)",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "10100",
+					"path": [
+						"api",
+						"issues",
+						"2-20",
+						"fields",
+						"107-14"
+					],
+					"query": [
+						{
+							"key": "$top",
+							"value": "-1",
+							"equals": true,
+							"description": ""
+						},
+						{
+							"key": "fields",
+							"value": "$type,id,value($type,id,name,ordinal)",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer perm:c2VnZQ==.NDUtMA==.PNyYK9i6rvgQ3fr3SK5Dcqjzn5j5Wn",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"$type\":\"StateIssueCustomField\",\"id\":\"107-14\",\"value\":{\"id\":\"97-12\",\"$type\":\"StateBundleElement\"}}\n"
+				},
+				"description": "97-12\n97-13"
+			},
+			"response": []
+		}
+	]
+}
