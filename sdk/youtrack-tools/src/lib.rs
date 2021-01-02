@@ -1,7 +1,7 @@
 mod rest_api;
 
 extern crate async_trait;
-
+extern crate serde;
 
 #[cfg(test)]
 mod tests {

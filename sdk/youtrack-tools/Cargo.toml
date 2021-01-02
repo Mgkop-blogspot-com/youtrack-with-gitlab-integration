@@ -10,3 +10,7 @@ edition = "2018"
 hyper = "*"
 tokio = "*"
 async-trait = "0.1.42"
+
+# serde
+serde = { version = "1.0.117", features = ["derive"] }
+serde_json = "*"
