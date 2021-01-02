@@ -8,3 +8,9 @@ pub trait BaseInfo {
     async fn name(&self) -> NameType;
     async fn id(&self) -> Ideantifier;
 }
+
+#[async_trait]
+pub trait BaseOps {
+    async fn update(&self) -> Self;
+    // async fn delete(&self) -> Self;
+}
