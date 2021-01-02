@@ -2,5 +2,5 @@ mod client;
 mod project;
 mod user;
 mod base;
-mod task;
+mod issue;
 mod youtrack_const;

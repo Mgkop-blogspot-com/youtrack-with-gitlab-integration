@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use crate::rest_api::project::{Project};
 use crate::rest_api::user::User;
-use crate::rest_api::task::{Task, TaskImpl};
+use crate::rest_api::issue::{Issue, IssueImpl};
 use crate::rest_api::base::{NameType, BaseInfo};
 use std::sync::{Mutex, Arc};
 use hyper::Client;
@@ -19,7 +19,7 @@ trait YoutrackClient: Sync {
     // async fn users(&self) -> Vec<Box<dyn User>>;
     // async fn user(&self, name: NameType) -> Vec<Box<dyn User>>;
     // async fn tasks(&self) -> Vec<Box<dyn Task>>;
-    async fn task(&self, name: NameType) -> Vec<Box<TaskImpl>>;
+    async fn task(&self, name: NameType) -> Vec<Box<IssueImpl>>;
     // async fn projects(&self) -> Vec<Box<dyn Project>>;
     // async fn project(&self, name: NameType) -> Box<dyn Project>;
 }
@@ -47,7 +47,7 @@ impl YoutrackClientImpl {
 
 #[async_trait]
 impl YoutrackClient for YoutrackClientImpl {
-    async fn task(&self, name: NameType) -> Vec<Box<TaskImpl>> {
+    async fn task(&self, name: NameType) -> Vec<Box<IssueImpl>> {
         unimplemented!()
     }
 }
