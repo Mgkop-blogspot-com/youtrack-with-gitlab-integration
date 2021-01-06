@@ -1,0 +1,16 @@
+{
+  "isResolved": false,
+  "showLocalizedNameInAdmin": false,
+  "localizedName": null,
+  "color": {
+    "id": "0",
+    "$type": "FieldStyle"
+  },
+  "hasRunningJob": false,
+  "description": null,
+  "ordinal": 2,
+  "archived": false,
+  "name": "In Progress",
+  "id": "97-14",
+  "$type": "StateBundleElement"
+}

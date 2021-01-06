@@ -3,12 +3,10 @@ use async_trait::async_trait;
 use crate::rest_api::base::{BaseInfo, ops::BaseOps, NameType, Ideantifier};
 use crate::rest_api::base::wrap::ActiveRecordWrap;
 use crate::rest_api::json_models::issue::IssueDto;
-use crate::rest_api::service::issues::fetch_issue_by_id;
+use crate::rest_api::service::issues::{fetch_issue_by_id, persist_changes};
 use std::ops::Deref;
 use std::sync::Arc;
-
-pub type IssueStatus = String;
-pub type IssueCustomField = String;
+use crate::rest_api::json_models::issue::field::custom_field::{IssueCustomField, IssueStatus};
 
 pub type Issue = ActiveRecordWrap<IssueDto>;
 
@@ -50,7 +48,9 @@ impl BaseOps for Issue {
         self
     }
 
-    async fn save(&mut self) -> Self {
-        unimplemented!()
+    async fn save(&mut self) -> &mut Self {
+        let new_origin = persist_changes(&self.http_client,  self.origin.clone(),self.inner.clone()).await;
+        self.refresh(new_origin);
+        self
     }
 }
