@@ -18,7 +18,7 @@ pub struct YoutrackClientImpl {
 #[derive(Clone, Debug)]
 pub struct Config {
     pub host: String,
-    pub bearer_token: String,
+    pub token: String,
 }
 
 #[async_trait]
@@ -38,9 +38,9 @@ impl YoutrackClientImpl {
         let mut req = hyper::Request::new(url);
         req.headers_mut().insert(hyper::header::AUTHORIZATION, "Bearer perm:token".parse().unwrap());
 
-        let config = Config { host: domain, bearer_token };
+        let config = Config { host: domain, token: bearer_token };
         let youtrack_client = YoutrackClientImpl {
-            client: Arc::new(HttpClient::new(config.host.clone())),
+            client: Arc::new(HttpClient::new(config.clone())),
             config,
         };
         Ok(youtrack_client)
@@ -50,7 +50,7 @@ impl YoutrackClientImpl {
 #[async_trait]
 impl YoutrackClient for YoutrackClientImpl {
     async fn issue(&self, name: NameType) -> Box<Issue> {
-        let http_client = HttpClient::new(self.config.host.clone());
+        let http_client = HttpClient::new(self.config.clone());
         let origin = fetch_issue_by_id(&http_client, name.clone()).await;
         box Issue::new(http_client, origin)
     }

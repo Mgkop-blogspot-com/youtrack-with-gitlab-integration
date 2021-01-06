@@ -24,24 +24,25 @@ pub mod ops {
 pub mod client {
     use std::sync::Arc;
     use tokio::sync::Mutex;
-    use hyper::{Client, Uri, Response, Body};
+    use hyper::{Client, Uri, Response, Body, Method};
     use hyper::client::{HttpConnector, ResponseFuture};
     use std::ops::Deref;
     use serde::export::fmt::Debug;
     use serde::export::Formatter;
     use std::fmt;
     use std::time::Instant;
+    use crate::rest_api::client::Config;
 
     pub type HyperClient = Client<HttpConnector, hyper::Body>;
 
     pub struct HttpClient {
         inner: Arc<HyperClient>,
         created_at: Instant,
-        host: String,
+        config:Config
     }
 
     impl HttpClient {
-        pub fn new(host: String) -> Self {
+        pub fn new(config: Config) -> Self {
             // let client: Client<_, hyper::Body> = Client::builder()
             //     .pool_idle_timeout(Duration::from_secs(30))
             //     .http2_only(true)
@@ -50,7 +51,7 @@ pub mod client {
 
             let default_client = Default::default();
             let inner = Arc::new(default_client);
-            HttpClient { inner, created_at: Instant::now(), host }
+            HttpClient { inner, created_at: Instant::now(), config }
         }
 
         pub fn refresh_client(&mut self) -> &Self {
@@ -59,17 +60,33 @@ pub mod client {
             self
         }
 
-        pub async fn get_uri(&self, uri: Uri) -> hyper::Result<Response<Body>> {
-            let pq = uri
-                .path_and_query()
-                .unwrap();
+        /// Async method for getting data from the server
+        /// Uses GET method and support auth using Bearer and Auth token
+        pub async fn fetch_data(&self, uri: String) -> hyper::Result<Response<Body>> {
+            let pq = {
+                let uri = uri.parse::<Uri>()
+                    .unwrap();
+                uri.path_and_query()
+                    .unwrap()
+                    .clone()
+            };
 
+            let host = self.config.host.clone();
             let uri = hyper::Uri::builder()
-                .scheme(self.host.clone().as_str())
+                .scheme(host.as_str())
                 .path_and_query(pq.clone()).build()
                 .unwrap();
 
-            self.inner.get(uri).await
+            let bearer = format!("Bearer {}", self.config.token);
+
+            let request = hyper::Request::builder()
+                .uri(uri)
+                .header(hyper::header::AUTHORIZATION, bearer)
+                .method(Method::GET)
+                .body(Body::empty())
+                .unwrap();
+
+            self.inner.request(request).await
         }
     }
 
