@@ -1,41 +1,41 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct IssueJson {
-    resolved: Option<String>,
-    summary: Option<String>,
+pub struct IssueDto {
+    pub resolved: Option<String>,
+    pub summary: Option<String>,
     // "numberInProject: 1,
-    number_in_project: u8,
-    reporter: Option<IssueReporter>,
-    id_readable: String,
+    pub number_in_project: u8,
+    pub reporter: Option<IssueReporter>,
+    pub id_readable: String,
     // voters
-    has_email: bool,
-    event_source_ticket: String,
+    pub has_email: bool,
+    pub event_source_ticket: String,
     // attachments
-    wikified_description: String,
+    pub wikified_description: String,
     // updater
     // comments
     // externalIssue
-    hidden_attachments_count: u8,
+    pub hidden_attachments_count: u8,
     // applicableActions
-    is_draft: bool,
+    pub is_draft: bool,
     // visibility
-    description: Option<String>,
+    pub description: Option<String>,
     // tags
     // created
     // links
     // project
-    uses_markdown: bool,
+    pub uses_markdown: bool,
     // updated
     // watchers
-    fields: Vec<field::IssueCustomField>,
-    id: String,
+    pub fields: Vec<field::IssueCustomField>,
+    pub id: String,
     #[serde(alias = "$type")]
-    model_type: String,
+    pub model_type: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct IssueReporter {
     ring_id: String,
@@ -47,7 +47,7 @@ pub struct IssueReporter {
 pub mod tests {
     use std::fs::File;
     use std::io::BufReader;
-    use crate::rest_api::json_models::issue::IssueJson;
+    use crate::rest_api::json_models::issue::IssueDto;
 
     #[test]
     fn test_it() {
@@ -58,7 +58,7 @@ pub mod tests {
             .unwrap();
         let reader = BufReader::new(file);
 
-        let result: IssueJson = serde_json::from_reader(reader).unwrap();
+        let result: IssueDto = serde_json::from_reader(reader).unwrap();
         println!("{:?}", result)
     }
 }
@@ -66,7 +66,7 @@ pub mod tests {
 mod field {
     use serde::{Serialize, Deserialize};
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, Clone)]
     #[serde(rename_all = "camelCase")]
     pub struct FieldBundle {
         id: String,
@@ -75,7 +75,7 @@ mod field {
     }
 
     #[serde(tag = "valueType")]
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, Clone)]
     pub enum FieldType {
         // SimpleString,
         // SimpleText,
@@ -105,7 +105,7 @@ mod field {
         // },
     }
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, Clone)]
     // #[serde(tag = "$type", rename_all = "camelCase")]
     #[serde(tag = "$type")]
     pub enum Field {
@@ -119,7 +119,7 @@ mod field {
         }
     }
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, Clone)]
     #[serde(rename_all = "camelCase")]
     pub struct ProjectCustomField {
         bundle: Option<FieldBundle>,
@@ -133,7 +133,7 @@ mod field {
         custom_filed_type: ProjectCustomFieldType,
     }
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, Clone)]
     pub enum ProjectCustomFieldType {
         EnumProjectCustomField,
         UserProjectCustomField,
@@ -143,7 +143,7 @@ mod field {
         OtherType,
     }
 
-    // #[derive(Serialize, Deserialize, Debug)]
+    // #[derive(Serialize, Deserialize, Debug, Clone)]
     // // #[serde(tag = "$type", rename_all = "camelCase")]
     // #[serde(tag = "$type")]
     // pub enum ProjectCustomField {
@@ -194,7 +194,7 @@ mod field {
     //     // },
     // }
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, Clone)]
     #[serde(tag = "$type")]
     pub enum FieldColor {
         #[serde(rename_all = "camelCase")]
@@ -203,7 +203,7 @@ mod field {
         }
     }
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, Clone)]
     #[serde(tag = "$type")]
     // #[serde(tag = "$type", rename_all = "camelCase")]
     pub enum FieldValue {
@@ -249,7 +249,7 @@ mod field {
         // },
     }
 
-    #[derive(Serialize, Deserialize, Debug)]
+    #[derive(Serialize, Deserialize, Debug, Clone)]
     #[serde(tag = "$type")]
     pub enum IssueCustomField {
         #[serde(rename_all = "camelCase")]

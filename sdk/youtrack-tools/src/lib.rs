@@ -1,3 +1,5 @@
+#![feature(box_syntax)]
+
 mod rest_api;
 
 extern crate async_trait;
