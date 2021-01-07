@@ -1,9 +1,10 @@
 #![feature(box_syntax)]
 
-mod rest_api;
+pub mod rest_api;
 
 extern crate async_trait;
 extern crate serde;
+extern crate log;
 
 #[cfg(test)]
 mod tests {

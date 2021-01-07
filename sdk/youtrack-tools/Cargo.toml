@@ -14,3 +14,7 @@ async-trait = "0.1.42"
 # serde
 serde = { version = "1.0.117", features = ["derive"] }
 serde_json = "*"
+
+# logger
+log = "^0.4.8"
+env_logger = "0.8"

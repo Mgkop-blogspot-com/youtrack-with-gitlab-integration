@@ -5,14 +5,13 @@ use crate::rest_api::json_models::issue::field::custom_field::{IssueCustomField,
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct IssueDto {
-    pub resolved: Option<String>,
+    // pub resolved: Option<u32>,
     pub summary: Option<String>,
-    // "numberInProject: 1,
-    pub number_in_project: u8,
+    pub number_in_project: Option<u8>,
     pub reporter: Option<IssueReporter>,
-    pub id_readable: String,
+    pub id_readable: Option<String>,
     // voters
-    pub has_email: bool,
+    pub has_email: Option<bool>,
     pub event_source_ticket: String,
     // attachments
     pub wikified_description: String,
@@ -38,11 +37,11 @@ pub struct IssueDto {
 }
 
 impl IssueDto {
-    pub fn get_state(&self) -> Option<StateIssueCustomField> {
+    pub fn get_state(&self) -> Option<&StateIssueCustomField> {
         self.fields.iter()
             .filter_map(|field| match field {
                 IssueCustomField::StateIssueCustomField(stateIssueCustomField) =>
-                    Some(stateIssueCustomField.clone()),
+                    Some(stateIssueCustomField),
                 _ => None
             })
             .next()
@@ -150,7 +149,7 @@ pub mod field {
         pub bundle: Option<FieldBundle>,
         pub empty_field_text: Option<String>,
         pub is_public: bool,
-        pub ordinal: u8,
+        pub ordinal: Option<u8>,
         pub can_be_empty: bool,
         pub field: Field,
         pub id: String,
@@ -228,30 +227,36 @@ pub mod field {
         }
     }
 
-    #[derive(Serialize, Deserialize, Debug, Clone)]
-    #[serde(tag = "$type")]
-    // #[serde(tag = "$type", rename_all = "camelCase")]
-    pub enum FieldValue {
+    pub mod value {
+        use crate::rest_api::json_models::issue::field::FieldColor;
+        use serde::{Serialize, Deserialize};
+        use serde;
+
         #[serde(rename_all = "camelCase")]
-        EnumBundleElement {
+        #[derive(Debug, Clone, Serialize, Deserialize)]
+        pub struct EnumBundleElement {
             localized_name: Option<String>,
             archived: bool,
             color: Option<FieldColor>,
             name: Option<String>,
             id: String,
-        },
+        }
+
         #[serde(rename_all = "camelCase")]
-        StateBundleElement {
-            is_resolved: bool,
-            localized_name: Option<String>,
-            archived: bool,
-            color: Option<FieldColor>,
-            name: Option<String>,
-            id: String,
-            ordinal: Option<u8>,
-        },
+        #[derive(Debug, Clone, Serialize, Deserialize)]
+        pub struct StateBundleElement {
+            pub is_resolved: bool,
+            pub localized_name: Option<String>,
+            pub archived: bool,
+            pub color: Option<FieldColor>,
+            pub name: Option<String>,
+            pub id: String,
+            pub ordinal: Option<u8>,
+        }
+
         #[serde(rename_all = "camelCase")]
-        User {
+        #[derive(Debug, Clone, Serialize, Deserialize)]
+        pub struct User {
             ring_id: String,
             avatar_url: Option<String>,
             login: Option<String>,
@@ -259,25 +264,38 @@ pub mod field {
             name: Option<String>,
             id: Option<String>,
 
-        },
+        }
+
         #[serde(rename_all = "camelCase")]
-        VersionBundleElement {
+        #[derive(Debug, Clone, Serialize, Deserialize)]
+        pub struct VersionBundleElement {
             archived: bool,
             color: Option<FieldColor>,
             name: Option<String>,
             id: String,
-        },
-        #[serde(other)]
-        OtherType,
-        // {
-        //     #[serde(alias = "$type")]
-        //     model_type: String
-        // },
+        }
+
+        #[derive(Serialize, Deserialize, Debug, Clone)]
+        #[serde(tag = "$type")]
+        // #[serde(tag = "$type", rename_all = "camelCase")]
+        pub enum FieldValue {
+            EnumBundleElement(EnumBundleElement),
+            StateBundleElement(StateBundleElement),
+            User(User),
+            VersionBundleElement(VersionBundleElement),
+            #[serde(other)]
+            OtherType,
+            // {
+            //     #[serde(alias = "$type")]
+            //     model_type: String
+            // },
+        }
     }
 
     pub mod custom_field {
         use serde::{Serialize, Deserialize};
-        use crate::rest_api::json_models::issue::field::{FieldValue, ProjectCustomField};
+        use crate::rest_api::json_models::issue::field::{ProjectCustomField};
+        use crate::rest_api::json_models::issue::field::value::{FieldValue, StateBundleElement};
 
         #[serde(rename_all = "camelCase")]
         #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -323,7 +341,7 @@ pub mod field {
         #[derive(Debug, Clone, Serialize, Deserialize)]
         pub struct StateIssueCustomField {
             pub project_custom_field: ProjectCustomField,
-            pub value: Option<FieldValue>,
+            pub value: FieldValue,
             pub is_updatable: bool,
             pub name: String,
             pub id: String,
@@ -336,23 +354,23 @@ pub mod field {
             }
 
             pub fn status_id(&self) -> String {
-                match self.value.as_ref().unwrap() {
-                    FieldValue::StateBundleElement {
-                        id: state_id,
-                        name: Some(state_name),
-                        ..
-                    } => Some(state_id.clone()),
+                match &self.value {
+                    FieldValue::StateBundleElement(StateBundleElement {
+                                                       id: state_id,
+                                                       name: Some(state_name),
+                                                       ..
+                                                   }) => Some(state_id.clone()),
                     _ => None
                 }.unwrap()
             }
 
             pub fn state_name(&self) -> String {
-                match self.value.as_ref().unwrap() {
-                    FieldValue::StateBundleElement {
-                        id: state_id,
-                        name: Some(state_name),
-                        ..
-                    } => Some(state_name.clone()),
+                match &self.value {
+                    FieldValue::StateBundleElement(StateBundleElement {
+                                                       id: state_id,
+                                                       name: Some(state_name),
+                                                       ..
+                                                   }) => Some(state_name.clone()),
                     _ => None
                 }.unwrap()
             }

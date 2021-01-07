@@ -1,6 +1,4 @@
 use async_trait::async_trait;
-use crate::rest_api::project::{Project};
-use crate::rest_api::user::User;
 use crate::rest_api::issue::{Issue};
 use crate::rest_api::base::{NameType, BaseInfo};
 use std::sync::{Mutex, Arc};
@@ -22,7 +20,7 @@ pub struct Config {
 }
 
 #[async_trait]
-trait YoutrackClient: Sync {
+pub trait YoutrackClient: Sync {
     // async fn users(&self) -> Vec<Box<dyn User>>;
     // async fn user(&self, name: NameType) -> Vec<Box<dyn User>>;
     // async fn tasks(&self) -> Vec<Box<dyn Task>>;

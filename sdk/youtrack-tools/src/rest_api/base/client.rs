@@ -40,13 +40,12 @@ impl HttpClient {
     /// Async method for getting data from the server
     /// Uses GET method and support auth using Bearer and Auth token
     pub async fn fetch_data(&self, path: String) -> hyper::Result<Response<Body>> {
+        log::info!("Fetching data from uri: {}", &path);
         let uri = self.to_uri(path);
-
-        let bearer = format!("Bearer {}", self.config.token);
 
         let request = hyper::Request::builder()
             .uri(uri)
-            .header(hyper::header::AUTHORIZATION, bearer)
+            .header(hyper::header::AUTHORIZATION, self.get_bearer())
             .method(Method::GET)
             .body(Body::empty())
             .unwrap();
@@ -56,11 +55,13 @@ impl HttpClient {
 
     pub async fn post_data<T>(&self, path: String, data: T) -> hyper::Result<Response<Body>> where T: Clone+Serialize {
         let uri = self.to_uri(path);
+        log::info!("POST Request: {}", &uri);
 
         let body = serde_json::to_string(&data).unwrap();
         let request = hyper::Request::builder()
             .method(Method::POST)
             .uri(uri)
+            .header(hyper::header::AUTHORIZATION, self.get_bearer())
             .header(hyper::header::CONTENT_TYPE, "application/json")
             .body(Body::from(body))
             .unwrap();
@@ -68,20 +69,14 @@ impl HttpClient {
         self.inner.request(request).await
     }
 
-    fn to_uri(&self, path: String) -> Uri {
-        let host = self.config.host.clone();
-        let pq = {
-            let uri = path.parse::<Uri>()
-                .unwrap();
-            uri.path_and_query()
-                .unwrap()
-                .clone()
-        };
+    fn get_bearer(&self)->String {
+        format!("Bearer {}", self.config.token)
+    }
 
-        hyper::Uri::builder()
-            .scheme(host.as_str())
-            .path_and_query(pq.clone()).build()
-            .unwrap()
+    fn to_uri(&self, path: String) -> Uri {
+        let mut host = self.config.host.clone();
+        host.push_str(path.as_str());
+        host.parse::<Uri>().unwrap()
     }
 }
 

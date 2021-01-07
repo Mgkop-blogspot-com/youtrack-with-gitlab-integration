@@ -1,9 +1,9 @@
-mod client;
+pub mod client;
 mod project;
 mod user;
-mod base;
-mod issue;
+pub mod base;
+pub mod issue;
 mod youtrack_const;
 mod json_models;
 
-mod service;
+pub mod service;
