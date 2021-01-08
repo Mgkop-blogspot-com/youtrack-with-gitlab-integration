@@ -71,14 +71,17 @@ pub async fn persist_changes(client: &HttpClient, origin_dto: Arc<IssueDto>, mod
             let expected_state_name = modified_state.state_name();
 
             let new_state_value = {
+                let mut availizble_state_names = Vec::with_capacity(field_values.len());
+
                 let new_value = field_values.iter()
-                    .filter_map(|field_value| match field_value {
+                    .filter_map(|field_value| match field_value.clone() {
                         FieldValue::StateBundleElement(
                             StateBundleElement {
                                 name: Some(new_state_name),
                                 id: new_state_id,
                                 ..
                             }) => {
+                            availizble_state_names.push(new_state_name.clone());
                             if new_state_name.eq_ignore_ascii_case(&expected_state_name) {
                                 Some({
                                     field_value.clone()
@@ -90,15 +93,15 @@ pub async fn persist_changes(client: &HttpClient, origin_dto: Arc<IssueDto>, mod
                         _ => None
                     })
                     .next()
-                    .unwrap();
+                    .expect(format!(r#"Wrong status name "{status_name}". Expected values: {values:?}"#, status_name = expected_state_name, values = availizble_state_names).as_str());
                 let mut state_custom_field = origin_state.clone();
                 state_custom_field.value = new_value;
                 state_custom_field
             };
-            
-            let path = format!("/api/issues/{}/fields/{}?$top=-1&fields=$type,id,value($type,archived,avatarUrl,buildLink,color(id),fullName,id,isResolved,localizedName,login,markdownText,minutes,name,presentation,ringId,text)",
-                               origin_issue_id, origin_state.project_custom_field.id);
-            let (status, body) = client.post_data(path, new_state_value).await.unwrap().into_parts();
+
+            let path = format!("/api/issues/{issue_id}/fields/{field_id}?$top=-1&fields=$type,id,value($type,archived,avatarUrl,buildLink,color(id),fullName,id,isResolved,localizedName,login,markdownText,minutes,name,presentation,ringId,text)",
+                               issue_id = origin_issue_id, field_id = origin_state.project_custom_field.id);
+            let (_, body) = client.post_data(path, new_state_value).await.unwrap().into_parts();
             hyper::body::to_bytes(body).await
                 .map(|bytes| log::info!("fetched response: {}", String::from_utf8_lossy(bytes.bytes())));
         }

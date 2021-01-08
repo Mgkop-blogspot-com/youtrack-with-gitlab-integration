@@ -409,6 +409,8 @@ pub mod field {
         WaitForDesignReview,
         DesignAccepted,
         Obsolete,
+        Done,
+        ToVerify,
         Other(String),
     }
 
@@ -428,7 +430,32 @@ pub mod field {
                 "wait for design review" => IssueStateType::WaitForDesignReview,
                 "design accepted" => IssueStateType::DesignAccepted,
                 "obsolete" => IssueStateType::Obsolete,
+                "done" => IssueStateType::Done,
+                "to verify" => IssueStateType::ToVerify,
                 other => IssueStateType::Other(other.to_string())
+            }
+        }
+    }
+
+    impl Into<String> for IssueStateType {
+        fn into(self) -> String {
+            match self {
+                IssueStateType::Submitted => "submitted".to_string(),
+                IssueStateType::Open => "open".to_string(),
+                IssueStateType::InProgress => "in progress".to_string(),
+                IssueStateType::WaitForMerge => "wait for merge".to_string(),
+                IssueStateType::Fixed => "fixed".to_string(),
+                IssueStateType::ReadyForTesting => "ready for testing".to_string(),
+                IssueStateType::Verified => "verified".to_string(),
+                IssueStateType::TBD => "tbd".to_string(),
+                IssueStateType::Duplicate => "duplicate".to_string(),
+                IssueStateType::Reopened => "reopened".to_string(),
+                IssueStateType::WaitForDesignReview => "wait for design review".to_string(),
+                IssueStateType::DesignAccepted => "design accepted".to_string(),
+                IssueStateType::Obsolete => "obsolete".to_string(),
+                IssueStateType::Done => "done".to_string(),
+                IssueStateType::ToVerify => "to verify".to_string(),
+                IssueStateType::Other(value) => value.clone(),
             }
         }
     }

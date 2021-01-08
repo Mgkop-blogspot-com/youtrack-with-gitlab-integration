@@ -8,6 +8,7 @@ use std::ops::{Deref, DerefMut};
 use std::sync::Arc;
 use crate::rest_api::json_models::issue::field::custom_field::{IssueCustomField, IssueStatus, StateIssueCustomField};
 use crate::rest_api::json_models::issue::field::value::{FieldValue, StateBundleElement};
+use crate::rest_api::json_models::issue::field::IssueStateType;
 
 pub type Issue = ActiveRecordWrap<IssueDto>;
 
@@ -86,12 +87,13 @@ impl Issue {
                                         }
                                     );
                                     Some((index, new_field))
-                                },
+                                }
                                 _ => None
                             }
                         _ => None
                     }
-                }).next().unwrap();
+                }).next()
+                .unwrap();
             cloned_fields.remove(index);
             cloned_fields.push(new_field);
             cloned_fields
@@ -99,5 +101,8 @@ impl Issue {
 
         let new_mutable_state = IssueDto { fields: new_fields, ..dto.clone() };
         *Arc::make_mut(&mut self.inner) = new_mutable_state;
+    }
+    pub fn set_state(&mut self, state_type: IssueStateType) {
+        self.set_state_name(state_type.into())
     }
 }
