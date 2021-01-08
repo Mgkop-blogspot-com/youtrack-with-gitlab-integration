@@ -1,0 +1,23 @@
+http://localhost:10100/api/issues/SSP-1?$top=-1&$topLinks=0&fields=
+$type,
+applicableActions(description,executing,id,name),
+attachments($type,author(fullName,id,ring_id),comment(id),created,id,imageDimensions(height,width),issue(id,project(id,ring_id)),mimeType,name,removed,size,thumbnailURL,url,visibility($type,implicitPermittedUsers($type,avatar_url,email,fullName,id,isLocked,issueRelatedGroup(icon),login,name,online,profiles(general(trackOnlineStatus)),ring_id),permittedGroups($type,allUsersGroup,icon,id,name,ring_id),permittedUsers($type,avatar_url,email,fullName,id,isLocked,issueRelatedGroup(icon),login,name,online,profiles(general(trackOnlineStatus)),ring_id))),
+comments(attachments($type,author(fullName,id,ring_id),comment(id),created,id,imageDimensions(height,width),issue(id,project(id,ring_id)),mimeType,name,removed,size,thumbnailURL,url,visibility($type,implicitPermittedUsers($type,avatar_url,email,fullName,id,isLocked,issueRelatedGroup(icon),login,name,online,profiles(general(trackOnlineStatus)),ring_id),permittedGroups($type,allUsersGroup,icon,id,name,ring_id),permittedUsers($type,avatar_url,email,fullName,id,isLocked,issueRelatedGroup(icon),login,name,online,profiles(general(trackOnlineStatus)),ring_id))),id),
+created,description,event_source_ticket,externalIssue(key,name,url),
+fields($type,hasStateMachine,id,is_updatable,name,project_custom_field($type,bundle(id),can_be_empty,empty_field_text,field(fieldType(isMultiValue,valueType),id,localized_name,name,ordinal),id,isEstimation,is_public,isSpentTime,ordinal,size),value($type,archived,avatar_url,buildLink,color(id),fullName,id,is_resolved,localized_name,login,minutes,name,presentation,ring_id,text)),
+has_email,hidden_attachments_count,id,id_readable,is_draft,
+links(
+    direction,id,issuesSize,
+    linkType(aggregation,directed,localized_name,localizedSourceToTarget,localizedTargetToSource,name,sourceToTarget,targetToSource,uid),
+    trimmedIssues(
+        $type,comments($type),created,id,id_readable,is_draft,numberInProject,project(id,ring_id),
+        reporter(id),resolved,summary,voters(hasVote),votes,watchers(hasStar)),
+    unresolvedIssuesSize),
+numberInProject,
+project($type,id,isDemo,leader(id),name,plugins(timeTrackingSettings(enabled,estimate(field(id,name),id),timeSpent(field(id,name),id)),vcsIntegrationSettings(processors(enabled,migrationFailed,server(enabled,url),upsourceHubResourceKey,url))),ring_id,shortName),
+reporter($type,avatar_url,email,fullName,id,isLocked,issueRelatedGroup(icon),login,name,online,profiles(general(trackOnlineStatus)),ring_id),
+resolved,summary,tags(color(id),id,is_updatable,isUsable,name,owner(id),query),updated,
+updater($type,avatar_url,email,fullName,id,isLocked,issueRelatedGroup(icon),login,name,online,profiles(general(trackOnlineStatus)),ring_id),
+uses_markdown,
+visibility($type,implicitPermittedUsers($type,avatar_url,email,fullName,id,isLocked,issueRelatedGroup(icon),login,name,online,profiles(general(trackOnlineStatus)),ring_id),permittedGroups($type,allUsersGroup,icon,id,name,ring_id),permittedUsers($type,avatar_url,email,fullName,id,isLocked,issueRelatedGroup(icon),login,name,online,profiles(general(trackOnlineStatus)),ring_id)),
+voters(hasVote),votes,watchers(hasStar),wikified_description

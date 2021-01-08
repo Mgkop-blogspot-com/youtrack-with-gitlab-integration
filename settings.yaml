@@ -1,15 +1,6 @@
-app:
-  port: 8000
-  file-storage-dir: images_dir
-arangodb:
-  # sample: http://arangoserver:5000/
-#  url: http://localhost:8529
-  url: http://sample_arangodb:8529
-  user: root
-  password: somepassword
-  pool:
-    max-connections: 20
-  schema:
-    default_db: api_sample
-    collections:
-      images: Images
+youtrack:
+  url: "http://localhost:10100"
+  token: "perm:c2VnZQ==.NDUtMA==.PNyYK9i6rvgQ3fr3SK5Dcqjzn5j5Wn"
+gitlab:
+  url:
+  token:

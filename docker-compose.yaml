@@ -21,6 +21,17 @@ services:
       - "arangodb"
     environment:
       - APP_arangodb_url=http://sample_arangodb:8529
+
+  youtrack:
+    image: jetbrains/youtrack:2020.6.1099
+    ports:
+      - "10100:8080"
+    volumes:
+      - ./youtrack/youtrack_data:/opt/youtrack/data
+      - ./youtrack/youtrack_conf:/opt/youtrack/conf
+      - ./youtrack/youtrack_logs:/opt/youtrack/logs
+      - ./youtrack/youtrack_backups:/opt/youtrack/backups
+
 volumes:
   arangodb_data_container:
   arangodb_apps_data_container:

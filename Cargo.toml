@@ -73,6 +73,10 @@ config = "*"
 serde = { version = "1.0.117", features = ["derive"] }
 serde_json = "*"
 
+# logging
+log = "^0.4.8"
+env_logger = "0.8"
+
 # tokio + futures
 futures = "*"
 tokio = { version = "0.2.23", features = ["full"] }
@@ -83,12 +87,11 @@ tokio-util = { version = "*", features = ["full"] }
 chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "0.8", features = ["serde", "v4"] }
 
-log = "^0.4.8"
-env_logger = "0.8"
-
 # actix
 listenfd = "0.3.3"
 qstring = "0.7.2"
 
+# etc
+indoc = "1.0.3"
 
 

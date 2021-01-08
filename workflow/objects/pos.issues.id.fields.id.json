@@ -1,0 +1,43 @@
+[
+  {
+    "$type": "StateIssueCustomField",
+    "id": "107-14",
+    "value": {
+      "isResolved": false,
+      "showLocalizedNameInAdmin": false,
+      "localizedName": null,
+      "color": {
+        "id": "0",
+        "$type": "FieldStyle"
+      },
+      "hasRunningJob": false,
+      "description": null,
+      "ordinal": 2,
+      "archived": false,
+      "name": "In ",
+      "id": "97-13",
+      "$type": "StateBundleElement"
+    }
+  },
+
+  {
+    "$type": "StateIssueCustomField",
+    "id": "107-14",
+    "value": {
+      "isResolved": false,
+      "showLocalizedNameInAdmin": false,
+      "localizedName": null,
+      "color": {
+        "id": "0",
+        "$type": "FieldStyle"
+      },
+      "hasRunningJob": false,
+      "description": null,
+      "ordinal": 1,
+      "archived": false,
+      "name": "Open",
+      "id": "97-12",
+      "$type": "StateBundleElement"
+    }
+  }
+]

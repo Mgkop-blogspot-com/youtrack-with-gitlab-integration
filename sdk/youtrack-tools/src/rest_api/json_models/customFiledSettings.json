@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Open",
+    "id": "97-13",
+    "$type": "StateBundleElement"
+  },
+  {
+    "name": "In Progress",
+    "id": "97-14",
+    "$type": "StateBundleElement"
+  },
+  {
+    "name": "To Verify",
+    "id": "97-15",
+    "$type": "StateBundleElement"
+  },
+  {
+    "name": "Done",
+    "id": "97-16",
+    "$type": "StateBundleElement"
+  },
+  {
+    "name": "Duplicate",
+    "id": "97-17",
+    "$type": "StateBundleElement"
+  }
+]

@@ -1,0 +1,570 @@
+{
+  "resolved": null,
+  "summary": "First task",
+  "numberInProject": 1,
+  "votes": 0,
+  "reporter": {
+    "ringId": "7f35d5cf-5e72-4843-b33e-0a3688f2ea8e",
+    "online": false,
+    "profiles": {
+      "$type": "UserProfiles",
+      "general": {
+        "trackOnlineStatus": true,
+        "$type": "GeneralUserProfile"
+      }
+    },
+    "issueRelatedGroup": null,
+    "avatarUrl": "/hub/api/rest/avatar/7f35d5cf-5e72-4843-b33e-0a3688f2ea8e?s=48",
+    "login": "sege",
+    "email": "martin10@bk.ru",
+    "fullName": "Serge",
+    "name": "Serge",
+    "isLocked": false,
+    "id": "1-1",
+    "$type": "User"
+  },
+  "idReadable": "SSP-1",
+  "voters": {
+    "hasVote": false,
+    "$type": "IssueVoters"
+  },
+  "hasEmail": false,
+  "eventSourceTicket": "b58g6n5bc39uaev9u14g2gjqgl09jl",
+  "attachments": [
+    {
+      "issue": {
+        "project": {
+          "ringId": "cf2fd265-52da-4d05-b914-c52310271257",
+          "id": "0-2",
+          "$type": "Project"
+        },
+        "id": "2-20",
+        "$type": "Issue"
+      },
+      "imageDimensions": {
+        "width": -1,
+        "height": -1
+      },
+      "thumbnailURL": null,
+      "removed": false,
+      "visibility": {
+        "$type": "UnlimitedVisibility"
+      },
+      "mimeType": "application/json",
+      "created": 1609610699912,
+      "author": {
+        "ringId": "7f35d5cf-5e72-4843-b33e-0a3688f2ea8e",
+        "fullName": "Serge",
+        "id": "1-1",
+        "$type": "User"
+      },
+      "url": "/api/files/8-2?sign=MTYwOTg3MDgwMDAwMHwxLTF8OC0yfGFtWnQ2bFV4LVhMbmlibk9fZjl1X0VwRlJ0S1lGN1RBWnVD%0D%0ARkNwLVhDVzgNCg%0D%0A&updated=1609610699826",
+      "comment": null,
+      "name": "youtrack.postman_collection.json",
+      "size": 3181,
+      "id": "8-2",
+      "$type": "IssueAttachment"
+    }
+  ],
+  "wikifiedDescription": "<div class=\"wiki text common-markdown\"><p>some description</p>\n</div>",
+  "updater": {
+    "ringId": "7f35d5cf-5e72-4843-b33e-0a3688f2ea8e",
+    "online": false,
+    "profiles": {
+      "$type": "UserProfiles",
+      "general": {
+        "trackOnlineStatus": true,
+        "$type": "GeneralUserProfile"
+      }
+    },
+    "issueRelatedGroup": null,
+    "avatarUrl": "/hub/api/rest/avatar/7f35d5cf-5e72-4843-b33e-0a3688f2ea8e?s=48",
+    "login": "sege",
+    "email": "martin10@bk.ru",
+    "fullName": "Serge",
+    "name": "Serge",
+    "isLocked": false,
+    "id": "1-1",
+    "$type": "User"
+  },
+  "comments": [
+    {
+      "attachments": [],
+      "id": "4-1",
+      "$type": "IssueComment"
+    }
+  ],
+  "externalIssue": null,
+  "hiddenAttachmentsCount": 0,
+  "applicableActions": [
+    {
+      "executing": false,
+      "description": "Clone issue",
+      "name": "clone",
+      "id": "clone",
+      "$type": "IssueAction"
+    },
+    {
+      "executing": false,
+      "description": "Clone issue as draft",
+      "name": "clone as draft",
+      "id": "clone as draft",
+      "$type": "IssueAction"
+    }
+  ],
+  "isDraft": false,
+  "visibility": {
+    "permittedGroups": [
+      {
+        "ringId": "8df3a7f7-5159-48b0-b41d-0b8d062e7d8a",
+        "allUsersGroup": false,
+        "icon": null,
+        "name": "Registered Users",
+        "id": "3-1",
+        "$type": "UserGroup"
+      }
+    ],
+    "permittedUsers": [],
+    "implicitPermittedUsers": [],
+    "$type": "LimitedVisibility"
+  },
+  "description": "some description",
+  "tags": [],
+  "created": 1609587405115,
+  "links": [
+    {
+      "direction": "BOTH",
+      "linkType": {
+        "localizedName": null,
+        "uid": 0,
+        "localizedSourceToTarget": null,
+        "targetToSource": "",
+        "localizedTargetToSource": null,
+        "directed": false,
+        "aggregation": false,
+        "sourceToTarget": "relates to",
+        "name": "Relates",
+        "$type": "IssueLinkType"
+      },
+      "issuesSize": 0,
+      "unresolvedIssuesSize": 0,
+      "trimmedIssues": [],
+      "id": "105-0",
+      "$type": "IssueLink"
+    },
+    {
+      "direction": "OUTWARD",
+      "linkType": {
+        "localizedName": null,
+        "uid": 1,
+        "localizedSourceToTarget": null,
+        "targetToSource": "depends on",
+        "localizedTargetToSource": null,
+        "directed": true,
+        "aggregation": false,
+        "sourceToTarget": "is required for",
+        "name": "Depend",
+        "$type": "IssueLinkType"
+      },
+      "issuesSize": 0,
+      "unresolvedIssuesSize": 0,
+      "trimmedIssues": [],
+      "id": "105-1s",
+      "$type": "IssueLink"
+    },
+    {
+      "direction": "INWARD",
+      "linkType": {
+        "localizedName": null,
+        "uid": 1,
+        "localizedSourceToTarget": null,
+        "targetToSource": "depends on",
+        "localizedTargetToSource": null,
+        "directed": true,
+        "aggregation": false,
+        "sourceToTarget": "is required for",
+        "name": "Depend",
+        "$type": "IssueLinkType"
+      },
+      "issuesSize": 0,
+      "unresolvedIssuesSize": 0,
+      "trimmedIssues": [],
+      "id": "105-1t",
+      "$type": "IssueLink"
+    },
+    {
+      "direction": "OUTWARD",
+      "linkType": {
+        "localizedName": null,
+        "uid": 2,
+        "localizedSourceToTarget": null,
+        "targetToSource": "duplicates",
+        "localizedTargetToSource": null,
+        "directed": true,
+        "aggregation": true,
+        "sourceToTarget": "is duplicated by",
+        "name": "Duplicate",
+        "$type": "IssueLinkType"
+      },
+      "issuesSize": 0,
+      "unresolvedIssuesSize": 0,
+      "trimmedIssues": [],
+      "id": "105-2s",
+      "$type": "IssueLink"
+    },
+    {
+      "direction": "INWARD",
+      "linkType": {
+        "localizedName": null,
+        "uid": 2,
+        "localizedSourceToTarget": null,
+        "targetToSource": "duplicates",
+        "localizedTargetToSource": null,
+        "directed": true,
+        "aggregation": true,
+        "sourceToTarget": "is duplicated by",
+        "name": "Duplicate",
+        "$type": "IssueLinkType"
+      },
+      "issuesSize": 0,
+      "unresolvedIssuesSize": 0,
+      "trimmedIssues": [],
+      "id": "105-2t",
+      "$type": "IssueLink"
+    },
+    {
+      "direction": "OUTWARD",
+      "linkType": {
+        "localizedName": null,
+        "uid": 3,
+        "localizedSourceToTarget": null,
+        "targetToSource": "subtask of",
+        "localizedTargetToSource": null,
+        "directed": true,
+        "aggregation": true,
+        "sourceToTarget": "parent for",
+        "name": "Subtask",
+        "$type": "IssueLinkType"
+      },
+      "issuesSize": 0,
+      "unresolvedIssuesSize": 0,
+      "trimmedIssues": [],
+      "id": "105-3s",
+      "$type": "IssueLink"
+    },
+    {
+      "direction": "INWARD",
+      "linkType": {
+        "localizedName": null,
+        "uid": 3,
+        "localizedSourceToTarget": null,
+        "targetToSource": "subtask of",
+        "localizedTargetToSource": null,
+        "directed": true,
+        "aggregation": true,
+        "sourceToTarget": "parent for",
+        "name": "Subtask",
+        "$type": "IssueLinkType"
+      },
+      "issuesSize": 0,
+      "unresolvedIssuesSize": 0,
+      "trimmedIssues": [],
+      "id": "105-3t",
+      "$type": "IssueLink"
+    }
+  ],
+  "project": {
+    "isDemo": false,
+    "ringId": "cf2fd265-52da-4d05-b914-c52310271257",
+    "shortName": "SSP",
+    "leader": {
+      "id": "1-1",
+      "$type": "User"
+    },
+    "plugins": {
+      "$type": "ProjectPlugins",
+      "vcsIntegrationSettings": {
+        "processors": [],
+        "$type": "ProjectVcsIntegrationSettings"
+      },
+      "timeTrackingSettings": {
+        "timeSpent": null,
+        "enabled": false,
+        "estimate": null,
+        "$type": "ProjectTimeTrackingSettings"
+      }
+    },
+    "name": "Simple Scrum Project",
+    "id": "0-2",
+    "$type": "Project"
+  },
+  "usesMarkdown": true,
+  "updated": 1609610739160,
+  "watchers": {
+    "hasStar": true,
+    "$type": "IssueWatchers"
+  },
+  "fields": [
+    {
+      "projectCustomField": {
+        "bundle": {
+          "id": "94-0",
+          "$type": "EnumBundle"
+        },
+        "emptyFieldText": "No Priority",
+        "isPublic": true,
+        "ordinal": 0,
+        "canBeEmpty": false,
+        "field": {
+          "localizedName": null,
+          "fieldType": {
+            "valueType": "enum",
+            "isMultiValue": false,
+            "$type": "FieldType"
+          },
+          "ordinal": 0,
+          "name": "Priority",
+          "id": "92-0",
+          "$type": "CustomField"
+        },
+        "id": "107-17",
+        "$type": "EnumProjectCustomField"
+      },
+      "value": {
+        "localizedName": null,
+        "archived": false,
+        "color": {
+          "id": "17",
+          "$type": "FieldStyle"
+        },
+        "name": "Normal",
+        "id": "95-3",
+        "$type": "EnumBundleElement"
+      },
+      "isUpdatable": true,
+      "name": "Priority",
+      "id": "107-17",
+      "$type": "SingleEnumIssueCustomField"
+    },
+    {
+      "projectCustomField": {
+        "bundle": {
+          "id": "94-2",
+          "$type": "EnumBundle"
+        },
+        "emptyFieldText": "No type",
+        "isPublic": true,
+        "ordinal": 0,
+        "canBeEmpty": false,
+        "field": {
+          "localizedName": null,
+          "fieldType": {
+            "valueType": "enum",
+            "isMultiValue": false,
+            "$type": "FieldType"
+          },
+          "ordinal": 1,
+          "name": "Type",
+          "id": "92-1",
+          "$type": "CustomField"
+        },
+        "id": "107-16",
+        "$type": "EnumProjectCustomField"
+      },
+      "value": {
+        "localizedName": null,
+        "archived": false,
+        "color": {
+          "id": "0",
+          "$type": "FieldStyle"
+        },
+        "name": "Task",
+        "id": "95-16",
+        "$type": "EnumBundleElement"
+      },
+      "isUpdatable": true,
+      "name": "Type",
+      "id": "107-16",
+      "$type": "SingleEnumIssueCustomField"
+    },
+    {
+      "projectCustomField": {
+        "bundle": {
+          "id": "96-1",
+          "$type": "StateBundle"
+        },
+        "emptyFieldText": "No state",
+        "isPublic": true,
+        "ordinal": 0,
+        "canBeEmpty": false,
+        "field": {
+          "localizedName": null,
+          "fieldType": {
+            "valueType": "state",
+            "isMultiValue": false,
+            "$type": "FieldType"
+          },
+          "ordinal": 2,
+          "name": "State",
+          "id": "92-2",
+          "$type": "CustomField"
+        },
+        "id": "107-14",
+        "$type": "StateProjectCustomField"
+      },
+      "value": {
+        "isResolved": false,
+        "localizedName": null,
+        "archived": false,
+        "color": {
+          "id": "0",
+          "$type": "FieldStyle"
+        },
+        "name": "Open",
+        "id": "97-13",
+        "$type": "StateBundleElement"
+      },
+      "isUpdatable": true,
+      "name": "State",
+      "id": "107-14",
+      "$type": "StateIssueCustomField"
+    },
+    {
+      "projectCustomField": {
+        "bundle": {
+          "id": "9-2",
+          "$type": "UserBundle"
+        },
+        "emptyFieldText": "Unassigned",
+        "isPublic": true,
+        "ordinal": 0,
+        "canBeEmpty": true,
+        "field": {
+          "localizedName": null,
+          "fieldType": {
+            "valueType": "user",
+            "isMultiValue": false,
+            "$type": "FieldType"
+          },
+          "ordinal": 3,
+          "name": "Assignee",
+          "id": "92-3",
+          "$type": "CustomField"
+        },
+        "id": "108-2",
+        "$type": "UserProjectCustomField"
+      },
+      "value": {
+        "ringId": "7f35d5cf-5e72-4843-b33e-0a3688f2ea8e",
+        "avatarUrl": "/hub/api/rest/avatar/7f35d5cf-5e72-4843-b33e-0a3688f2ea8e?s=48",
+        "login": "sege",
+        "fullName": "Serge",
+        "name": "Serge",
+        "id": "1-1",
+        "$type": "User"
+      },
+      "isUpdatable": true,
+      "name": "Assignee",
+      "id": "108-2",
+      "$type": "SingleUserIssueCustomField"
+    },
+    {
+      "projectCustomField": {
+        "bundle": {
+          "id": "99-3",
+          "$type": "VersionBundle"
+        },
+        "emptyFieldText": "Unscheduled",
+        "isPublic": true,
+        "ordinal": 0,
+        "canBeEmpty": true,
+        "field": {
+          "localizedName": null,
+          "fieldType": {
+            "valueType": "version",
+            "isMultiValue": true,
+            "$type": "FieldType"
+          },
+          "ordinal": 12,
+          "name": "Sprints",
+          "id": "92-11",
+          "$type": "CustomField"
+        },
+        "id": "107-15",
+        "$type": "VersionProjectCustomField"
+      },
+      "value": [
+        {
+          "archived": false,
+          "color": {
+            "id": "0",
+            "$type": "FieldStyle"
+          },
+          "name": "1",
+          "id": "140-0",
+          "$type": "VersionBundleElement"
+        }
+      ],
+      "isUpdatable": true,
+      "name": "Sprints",
+      "id": "107-15",
+      "$type": "MultiVersionIssueCustomField"
+    },
+    {
+      "projectCustomField": {
+        "emptyFieldText": "Not estimated",
+        "isPublic": true,
+        "ordinal": 0,
+        "canBeEmpty": true,
+        "field": {
+          "localizedName": null,
+          "fieldType": {
+            "valueType": "integer",
+            "isMultiValue": false,
+            "$type": "FieldType"
+          },
+          "ordinal": 13,
+          "name": "Ideal days",
+          "id": "92-12",
+          "$type": "CustomField"
+        },
+        "id": "135-0",
+        "$type": "SimpleProjectCustomField"
+      },
+      "value": null,
+      "isUpdatable": true,
+      "name": "Ideal days",
+      "id": "135-0",
+      "$type": "SimpleIssueCustomField"
+    },
+    {
+      "projectCustomField": {
+        "emptyFieldText": "Not estimated",
+        "isPublic": true,
+        "ordinal": 0,
+        "canBeEmpty": true,
+        "field": {
+          "localizedName": null,
+          "fieldType": {
+            "valueType": "integer",
+            "isMultiValue": false,
+            "$type": "FieldType"
+          },
+          "ordinal": 14,
+          "name": "Original estimation",
+          "id": "92-13",
+          "$type": "CustomField"
+        },
+        "id": "135-1",
+        "$type": "SimpleProjectCustomField"
+      },
+      "value": null,
+      "isUpdatable": true,
+      "name": "Original estimation",
+      "id": "135-1",
+      "$type": "SimpleIssueCustomField"
+    }
+  ],
+  "id": "2-20",
+  "$type": "Issue"
+}
