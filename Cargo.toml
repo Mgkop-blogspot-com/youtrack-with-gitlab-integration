@@ -58,6 +58,7 @@ members = [
     "sdk/gitlab-tools",
     "sdk/youtrack-tools",
     "sdk/utils/git-utils",
+    "sdk/utils/env-utils",
 ]
 
 
