@@ -86,9 +86,11 @@ pub mod tests {
 }
 
 pub mod field {
-    use serde::{Serialize, Deserialize};
+    use serde::{Serialize, Deserialize, Deserializer, Serializer};
     use crate::rest_api::json_models::issue::field::custom_field::IssueCustomField::StateIssueCustomField;
     use crate::rest_api::json_models::issue::field::custom_field::IssueCustomField;
+    use serde_json::Value;
+    use serde::de::{Error, Unexpected};
 
     #[derive(Serialize, Deserialize, Debug, Clone)]
     #[serde(rename_all = "camelCase")]
@@ -228,7 +230,7 @@ pub mod field {
     }
 
     pub mod value {
-        use crate::rest_api::json_models::issue::field::FieldColor;
+        use crate::rest_api::json_models::issue::field::{FieldColor, IssueStateType};
         use serde::{Serialize, Deserialize};
         use serde;
 
@@ -249,7 +251,7 @@ pub mod field {
             pub localized_name: Option<String>,
             pub archived: bool,
             pub color: Option<FieldColor>,
-            pub name: Option<String>,
+            pub name: Option<IssueStateType>,
             pub id: String,
             pub ordinal: Option<u8>,
         }
@@ -294,7 +296,7 @@ pub mod field {
 
     pub mod custom_field {
         use serde::{Serialize, Deserialize};
-        use crate::rest_api::json_models::issue::field::{ProjectCustomField};
+        use crate::rest_api::json_models::issue::field::{ProjectCustomField, IssueStateType};
         use crate::rest_api::json_models::issue::field::value::{FieldValue, StateBundleElement};
 
         #[serde(rename_all = "camelCase")]
@@ -364,7 +366,7 @@ pub mod field {
                 }.unwrap()
             }
 
-            pub fn state_name(&self) -> String {
+            pub fn state_name(&self) -> IssueStateType {
                 match &self.value {
                     FieldValue::StateBundleElement(StateBundleElement {
                                                        id: state_id,
@@ -394,7 +396,7 @@ pub mod field {
         pub type IssueStatus = IssueCustomField;
     }
 
-    #[derive(Clone, Debug)]
+    #[derive(Clone, Debug, Eq, PartialEq)]
     pub enum IssueStateType {
         Submitted,
         Open,
@@ -415,8 +417,8 @@ pub mod field {
     }
 
     impl IssueStateType {
-        pub fn new(state_name: &String) -> Self {
-            match state_name.clone().to_lowercase().as_str() {
+        pub fn new(state_name: &str) -> Self {
+            match state_name.to_lowercase().as_str() {
                 "submitted" => IssueStateType::Submitted,
                 "open" => IssueStateType::Open,
                 "in progress" => IssueStateType::InProgress,
@@ -436,6 +438,32 @@ pub mod field {
             }
         }
     }
+
+    impl Serialize for IssueStateType    {
+        fn serialize<S>(&self, serializer: S) -> Result<<S as Serializer>::Ok, <S as Serializer>::Error> where S: Serializer {
+            let text_value:String = Into::into(self.clone());
+            serializer.serialize_str(text_value.as_str())
+        }
+    }
+
+    impl<'de> Deserialize<'de> for IssueStateType {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: Deserializer<'de>, {
+            let value = <Value as Deserialize>::deserialize(deserializer)?;
+
+            let result = value.as_str().ok_or({
+                D::Error::invalid_value(
+                    Unexpected::Seq, &format!("Wrong state type: {:?}", &value).as_str())
+            }).map(|value| IssueStateType::new(value))
+                .map_err(|err| {
+                    D::Error::invalid_value(
+                        Unexpected::Other("web hook"),
+                        &format!("{:?}", err).as_str(),
+                    )
+                });
+            result
+        }
+    }
+
 
     impl Into<String> for IssueStateType {
         fn into(self) -> String {

@@ -69,7 +69,7 @@ impl BaseOps for Issue {
 }
 
 impl Issue {
-    pub fn set_state_name(&mut self, status_name: String) {
+    pub fn set_state_name(&mut self, status_type: IssueStateType) {
         let dto = &*self.inner;
         let new_fields = {
             let mut cloned_fields = dto.fields.clone();
@@ -79,7 +79,7 @@ impl Issue {
                         IssueCustomField::StateIssueCustomField(state_custom_field) =>
                             match state_custom_field.value.clone() {
                                 FieldValue::StateBundleElement(mut state_bundle_element) => {
-                                    state_bundle_element.name = Some(status_name.clone());
+                                    state_bundle_element.name = Some(status_type.clone());
                                     let new_field = IssueCustomField::StateIssueCustomField(
                                         StateIssueCustomField {
                                             value: FieldValue::StateBundleElement(state_bundle_element),
@@ -103,6 +103,6 @@ impl Issue {
         *Arc::make_mut(&mut self.inner) = new_mutable_state;
     }
     pub fn set_state(&mut self, state_type: IssueStateType) {
-        self.set_state_name(state_type.into())
+        self.set_state_name(state_type)
     }
 }

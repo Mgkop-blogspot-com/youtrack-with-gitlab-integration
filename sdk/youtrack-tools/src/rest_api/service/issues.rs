@@ -82,7 +82,7 @@ pub async fn persist_changes(client: &HttpClient, origin_dto: Arc<IssueDto>, mod
                                 ..
                             }) => {
                             availizble_state_names.push(new_state_name.clone());
-                            if new_state_name.eq_ignore_ascii_case(&expected_state_name) {
+                            if new_state_name == expected_state_name {
                                 Some({
                                     field_value.clone()
                                 })
@@ -93,7 +93,7 @@ pub async fn persist_changes(client: &HttpClient, origin_dto: Arc<IssueDto>, mod
                         _ => None
                     })
                     .next()
-                    .expect(format!(r#"Wrong status name "{status_name}". Expected values: {values:?}"#, status_name = expected_state_name, values = availizble_state_names).as_str());
+                    .expect(format!(r#"Wrong status name "{status_name:?}". Expected values: {values:?}"#, status_name = expected_state_name, values = availizble_state_names).as_str());
                 let mut state_custom_field = origin_state.clone();
                 state_custom_field.value = new_value;
                 state_custom_field
