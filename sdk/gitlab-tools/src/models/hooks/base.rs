@@ -5,7 +5,7 @@ pub type VisibilityLevel = u8;
 pub type AvatarUrl = Option<String>;
 pub type MilestoneId = Option<Identifier>;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct LastCommit {
     pub id: String,
     pub message: String,
@@ -14,13 +14,13 @@ pub struct LastCommit {
     pub author: Author,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct Author {
     pub name: String,
     pub email: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct Repository {
     pub name: String,
     pub url: String,
@@ -28,7 +28,7 @@ pub struct Repository {
     pub homepage: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct Project {
     pub id: Option<Identifier>,
     pub name: String,
@@ -47,7 +47,7 @@ pub struct Project {
     pub http_url: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct User {
     pub name: String,
     pub username: String,

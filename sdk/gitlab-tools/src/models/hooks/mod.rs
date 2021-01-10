@@ -52,8 +52,7 @@ impl<'de> Deserialize<'de> for GitlabHookRequest {
                     &format!("unrecognized webhook object kind: {}", object).as_str(),
                 ));
             }
-        }
-            .map_err(|err| {
+        }.map_err(|err| {
                 D::Error::invalid_value(
                     Unexpected::Other("web hook"),
                     &format!("{:?}", err).as_str(),
@@ -61,3 +60,4 @@ impl<'de> Deserialize<'de> for GitlabHookRequest {
             })
     }
 }
+

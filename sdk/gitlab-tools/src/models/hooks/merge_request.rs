@@ -1,7 +1,8 @@
-use serde::{self, Serialize, Deserialize};
+use serde::{self, Deserialize};
 use crate::models::hooks::base::{LastCommit, Project, Repository, User, Identifier, MilestoneId, AvatarUrl};
+use crate::models::hooks::merge_request::custom::{MergeRequestState, MergeRequestAction};
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct MRObjectAttributes {
     pub id: Identifier,
     pub target_branch: String,
@@ -13,7 +14,7 @@ pub struct MRObjectAttributes {
     pub created_at: String,
     pub updated_at: String,
     pub milestone_id: MilestoneId,
-    pub state: String,
+    pub state: MergeRequestState,
     pub merge_status: String,
     pub target_project_id: Identifier,
     pub iid: Identifier,
@@ -23,11 +24,13 @@ pub struct MRObjectAttributes {
     pub last_commit: LastCommit,
     pub work_in_progress: bool,
     pub url: String,
-    pub action: Option<String>,
+    pub action: Option<MergeRequestAction>,
+    // pub action: Option<String>,
     pub assignee: Option<User>,
+    pub merge_when_pipeline_succeeds: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct Label {
     pub id: Identifier,
     pub title: String,
@@ -40,32 +43,101 @@ pub struct Label {
     pub group_id: Identifier,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct Changes {
     pub updated_by_id: Option<UpdatedById>,
     pub updated_at: Option<UpdatedAt>,
     pub labels: Option<Labels>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct UpdatedById {
     pub previous: Option<Identifier>,
     pub current: Identifier,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct UpdatedAt {
     pub previous: Option<String>,
     pub current: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct Labels {
     pub previous: Vec<Label>,
     pub current: Vec<Label>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+pub mod custom {
+    use serde::{Deserialize, Deserializer};
+    use serde_json::Value;
+    use serde::de::{Error, Unexpected};
+    use std::any::Any;
+
+    #[derive(Debug, Clone, PartialEq)]
+    pub enum MergeRequestState {
+        Opened,
+        Closed,
+        Locked,
+        Merged,
+        Other(String)
+    }
+
+    impl<'de> Deserialize<'de> for MergeRequestState {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: Deserializer<'de>, {
+            let value = <Value as Deserialize>::deserialize(deserializer)?;
+
+            let result = value.as_str().ok_or({
+                D::Error::invalid_value(
+                    Unexpected::Seq, &format!("Wrong action type: {:?}", &value).as_str())
+            }).map(|value| match value {
+                "opened" => MergeRequestState::Opened,
+                "closed" => MergeRequestState::Closed,
+                "locked" => MergeRequestState::Locked,
+                "merged" => MergeRequestState::Merged,
+                // "merge" => MergeRequestAction::Merge,
+                other => MergeRequestState::Other(other.to_string())
+            })
+                .map_err(|err| {
+                    D::Error::invalid_value(
+                        Unexpected::Other("web hook"),
+                        &format!("{:?}", err).as_str(),
+                    )
+                });
+            result
+        }
+    }
+
+
+    #[derive(Debug, Clone, PartialEq)]
+    pub enum MergeRequestAction {
+        Merge,
+        Other(String),
+    }
+
+    impl<'de> Deserialize<'de> for MergeRequestAction {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: Deserializer<'de>, {
+            let value = <Value as Deserialize>::deserialize(deserializer)?;
+
+            let result = value.as_str().ok_or({
+                D::Error::invalid_value(
+                    Unexpected::Seq, &format!("Wrong action type: {:?}", &value).as_str())
+            }).map(|value| match value {
+                "merge" => MergeRequestAction::Merge,
+                other => MergeRequestAction::Other(other.to_string()),
+            })
+                .map_err(|err| {
+                    D::Error::invalid_value(
+                        Unexpected::Other("web hook"),
+                        &format!("{:?}", err).as_str(),
+                    )
+                });
+            result
+        }
+    }
+}
+
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct MergeRequestHook {
     pub user: User,
     pub project: Project,
