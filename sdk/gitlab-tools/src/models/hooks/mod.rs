@@ -2,9 +2,6 @@ pub mod base;
 pub mod merge_request;
 pub mod note;
 pub mod pipeline;
-// mod exp;
-// mod exp2;
-
 use serde::{self, Serialize, Deserialize, Deserializer};
 use crate::models::hooks::pipeline::PipelineHook;
 use crate::models::hooks::note::NoteHook;

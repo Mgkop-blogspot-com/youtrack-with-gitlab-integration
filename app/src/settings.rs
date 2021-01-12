@@ -1,6 +1,7 @@
 use config::ConfigError;
 use config::FileFormat;
 use serde_json::Value;
+use std::collections::HashMap;
 
 lazy_static! {
 	 static ref SETTINGS: config::Config = {
@@ -23,7 +24,7 @@ pub fn get_int(key: &str) -> Result<i64, ConfigError> {
     SETTINGS.get_int(key)
 }
 
-pub fn get_map<T>(key: &str) -> Result<Vec<(String, T)>, ConfigError> where T: From<config::Value> {
+pub fn get_map<T>(key: &str) -> Result<HashMap<String, T>, ConfigError> where T: From<config::Value> {
     SETTINGS.get_table(key)
         .map(|table| table.iter()
             .map(|(key, value)| (key.clone(), T::from(value.clone()))

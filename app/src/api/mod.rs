@@ -14,6 +14,7 @@ use actix_web::body::Body;
 use actix_web::client::HttpError;
 use crate::service::webhook_service::SimpleWebhookService;
 use crate::service::Service;
+use crate::service::patter_builder_service::mustache::MustachePatternBuilderService;
 
 const MAX_SIZE: usize = 262_144;
 
@@ -57,12 +58,16 @@ pub async fn server() -> Server {
         let token = settings::get_str("youtrack.token").unwrap();
         let client = YoutrackClientImpl::new(base_url, token).await.unwrap();
         let service = YoutrackService::new(client);
-        let rw_lock = RwLock::new(service);
-        Arc::new(rw_lock)
+        crate::service::new_service(service)
+    };
+
+    let pattern_builder_service = {
+        let service = MustachePatternBuilderService::new();
+        crate::service::new_service(service)
     };
 
     let webhook_service = {
-        let service = SimpleWebhookService::new(youtrack_service.clone());
+        let service = SimpleWebhookService::new(youtrack_service.clone(), pattern_builder_service.clone());
         crate::service::new_service(service)
     };
 

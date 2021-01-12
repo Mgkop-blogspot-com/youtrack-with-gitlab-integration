@@ -99,4 +99,5 @@ qstring = "0.7.2"
 # etc
 indoc = "1.0.3"
 grok = "1.1"
+mustache = "*"
 snafu = "*"

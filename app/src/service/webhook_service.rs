@@ -8,10 +8,14 @@ use gitlab_tools::models::hooks::merge_request::custom::{MergeRequestState, Merg
 use std::borrow::BorrowMut;
 use tokio::sync::RwLock;
 use snafu::{ensure, Backtrace, ErrorCompat, ResultExt, Snafu};
+use crate::service::Service;
+use crate::service::patter_builder_service::mustache::MustachePatternBuilderService as PatternService;
+use std::collections::HashMap;
 
 /// This implementation doesn't support grok patterns
 pub struct SimpleWebhookService {
-    youtrack_service: Arc<RwLock<YoutrackService>>
+    youtrack_service: Service<YoutrackService>,
+    builder_service: Service<PatternService>,
 }
 
 // #[derive(Debug, Snafu)]
@@ -35,8 +39,8 @@ lazy_static! {
 }
 
 impl SimpleWebhookService {
-    pub fn new(youtrack_service: Arc<RwLock<YoutrackService>>) -> SimpleWebhookService {
-        SimpleWebhookService { youtrack_service }
+    pub fn new(youtrack_service: Service<YoutrackService>, builder_service: Service<PatternService>) -> SimpleWebhookService {
+        SimpleWebhookService { youtrack_service, builder_service }
     }
 
     pub async fn process_web_hook(&mut self, webhook: GitlabHookRequest) -> Result<(), SimpleWebhookServiceError> {
@@ -44,7 +48,7 @@ impl SimpleWebhookService {
             GitlabHookRequest::MergeRequest(merge_request_hook) => {
                 Ok(self.process_merge_request_hook(merge_request_hook).await)
             }
-            GitlabHookRequest::Note(_) =>Err(SimpleWebhookServiceError::NoteHookNotImplemented),
+            GitlabHookRequest::Note(_) => Err(SimpleWebhookServiceError::NoteHookNotImplemented),
             GitlabHookRequest::Pipeline(_) => Err(SimpleWebhookServiceError::PipelineHookNotImplemented)
         };
         result
@@ -53,11 +57,22 @@ impl SimpleWebhookService {
     pub async fn process_merge_request_hook(&mut self, merge_request_hook: MergeRequestHook) {
         let merge_request_action = merge_request_hook.object_attributes.action;
         let task_id = {
-            match MERGE_REQUEST_TITLE_PATTERN.match_against(merge_request_hook.object_attributes.title.as_ref()) {
-                Some(matches) => match matches.get("TASK") {
-                    Some(task_id) => Some(format!("SSP-{}", task_id.parse::<u32>().unwrap())),
-                    // Some(task_id) => Some(format!("PMS-{:?}", task_id)),
-                    _ => None
+            let title = merge_request_hook.object_attributes.title;
+            match MERGE_REQUEST_TITLE_PATTERN.match_against(title.as_ref()) {
+                Some(matches) => {
+                    let mut captured_patterns = HashMap::new();
+                    for (capture, name) in matches.iter() {
+                        // println!("capture: {:?}, names: {:?}", capture, names);
+                        captured_patterns.insert(capture.to_string(), name.to_string());
+                    }
+
+                    let task_readable_identifier = if let Some(_) = crate::settings::get_str("gitlab.merge-request.youtrack-task-id-builder").ok() {
+                        self.builder_service.clone().read().await.youtrack_task_build(captured_patterns)
+                    } else {
+                        title.clone()
+                    };
+
+                    Some(task_readable_identifier)
                 }
                 _ => None
             }
