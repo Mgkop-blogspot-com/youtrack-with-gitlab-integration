@@ -1,6 +1,7 @@
 use serde::{Serialize, Deserialize};
-use crate::rest_api::json_models::issue::field::{ProjectCustomFieldType, ProjectCustomField};
+use crate::rest_api::json_models::issue::field::{ProjectCustomFieldType, ProjectCustomField, FieldColor};
 use crate::rest_api::json_models::issue::field::custom_field::{IssueCustomField, StateIssueCustomField};
+use crate::rest_api::json_models::issue::field::value::User;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -34,6 +35,7 @@ pub struct IssueDto {
     pub id: String,
     #[serde(alias = "$type")]
     pub model_type: String,
+    pub tags: Option<Vec<IssueTag>>,
 }
 
 impl IssueDto {
@@ -265,7 +267,6 @@ pub mod field {
             full_name: Option<String>,
             name: Option<String>,
             id: Option<String>,
-
         }
 
         #[serde(rename_all = "camelCase")]
@@ -439,9 +440,9 @@ pub mod field {
         }
     }
 
-    impl Serialize for IssueStateType    {
+    impl Serialize for IssueStateType {
         fn serialize<S>(&self, serializer: S) -> Result<<S as Serializer>::Ok, <S as Serializer>::Error> where S: Serializer {
-            let text_value:String = Into::into(self.clone());
+            let text_value: String = Into::into(self.clone());
             serializer.serialize_str(text_value.as_str())
         }
     }
@@ -463,7 +464,6 @@ pub mod field {
             result
         }
     }
-
 
     impl Into<String> for IssueStateType {
         fn into(self) -> String {
@@ -487,4 +487,16 @@ pub mod field {
             }
         }
     }
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct IssueTag {
+    is_usable: bool,
+    color: FieldColor,
+    // owner:
+    query: String,
+    is_updatable: bool,
+    name: String,
+    id: Str,
 }

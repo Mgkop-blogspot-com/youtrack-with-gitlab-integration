@@ -11,6 +11,5 @@ gitlab:
   url: "https://git.let4.me"
   token: "secret_token"
   merge-request:
-    prefix: "SSP"
     title-pattern: "%{TASK_ID} %{TITLE}"
     youtrack-task-id-builder: "SSP-{{TASK_ID}}"
