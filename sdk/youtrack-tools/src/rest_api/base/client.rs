@@ -40,8 +40,8 @@ impl HttpClient {
     /// Async method for getting data from the server
     /// Uses GET method and support auth using Bearer and Auth token
     pub async fn fetch_data(&self, path: String) -> hyper::Result<Response<Body>> {
-        log::info!("Fetching data from uri: {}", &path);
         let uri = self.to_uri(path);
+        log::info!("Fetching data from uri: {}", &uri);
 
         let request = hyper::Request::builder()
             .uri(uri)
@@ -72,11 +72,11 @@ impl HttpClient {
     fn get_bearer(&self)->String {
         format!("Bearer {}", self.config.token)
     }
-
-    fn to_uri(&self, path: String) -> Uri {
-        let mut host = self.config.host.clone();
-        host.push_str(path.as_str());
-        host.parse::<Uri>().unwrap()
+    
+    fn to_uri(&self, path: String) -> String {
+        let mut uri = self.config.host.clone();
+        uri.push_str(path.as_str());
+        uri
     }
 }
 

@@ -84,7 +84,6 @@ env_logger = "0.8"
 futures = "*"
 tokio = { version = "0.2.23", features = ["full"] }
 tokio-util = { version = "*", features = ["full"] }
-warp="*"
 actix-web = "3.3.2"
 #tokio-util = { version = "*", features = ["full"] }
 

@@ -2,12 +2,18 @@ use actix_web::{get, post, web, Responder, HttpServer, middleware, App, HttpRequ
 use actix_web::dev::Server;
 use crate::settings;
 use std::sync::Arc;
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, RwLock};
 use listenfd::ListenFd;
 use tokio::stream::StreamExt;
 use gitlab_tools::models::hooks::GitlabHookRequest;
 use web_utils::HeaderGetter;
 use crate::service::youtrack_service::YoutrackService;
+use youtrack_tools::rest_api::client::YoutrackClientImpl;
+use actix_web::web::Json;
+use actix_web::body::Body;
+use actix_web::client::HttpError;
+use crate::service::webhook_service::SimpleWebhookService;
+use crate::service::Service;
 
 const MAX_SIZE: usize = 262_144;
 
@@ -18,48 +24,47 @@ pub async fn index(web::Path((id, name)): web::Path<(u32, String)>) -> impl Resp
 
 
 #[post("/api/gitlab/hooks")]
-pub async fn merge_request(request: HttpRequest, hook: web::Json<GitlabHookRequest>, youtrack_service: web::Data<YoutrackService>) -> impl Responder {
+pub async fn merge_request(request: HttpRequest, hook: web::Json<GitlabHookRequest>, hook_service: web::Data<Service<SimpleWebhookService>>) -> impl Responder {
+    let gitlab_event_header = request.get_header("X-Gitlab-Event");
+    let gitlab_token_header = request.get_header("x-gitlab-token");
 
-    // let x_gitlab_event_header = request.headers().get("X-Gitlab-Event").unwrap().to_str().unwrap();
-    // let received_token = request.headers().get("x-gitlab-token").unwrap().to_str().unwrap();
+    let expected_token = settings::get_str("gitlab.token").unwrap();
 
-    // match (request.get_header("X-Gitlab-Event"), request.get_header("x-gitlab-token")) {
-    //     (Some(gitlab_event), Some(gitlab_token)) =>
-    //         if settings::get_str("gitlab.token").unwrap() == gitlab_token {
-    //             Ok(gitlab_event)
-    //         } else {
-    //             Err("Received wrong token")
-    //         }
-    //     (_, _) => Err(r#"Missed requeared headers: "X-Gitlab-Event", "X-Gitlab-Token""#),
-    // }.and_then(|ignore|{
-    //     hook
-    // })
-
-    // .map(|(gitlab_event, gitlab_token)|if settings::get_str("gitlab.token").unwrap() == gitlab_token {
-    // gitlab_event
-    // }else { Err("Received wrong token") })
-    ;
-    // Ok(HttpResponse::Ok().json(obj)) // <- send response
-
-    HttpResponse::Ok().body("not implemented")
-    // Ok(HttpResponse::Ok().body("not implemented"))
+    if let (Some(gitlab_event), Some(gitlab_token)) = (gitlab_event_header, gitlab_token_header) {
+        if gitlab_token == expected_token {
+            match hook.0 {
+                GitlabHookRequest::MergeRequest(merge_request_hook) => {
+                    let mut hook_service = hook_service.write().await;
+                    hook_service.process_merge_request_hook(merge_request_hook).await;
+                    HttpResponse::Ok().body("done")
+                }
+                GitlabHookRequest::Note(_) => HttpResponse::BadRequest().body(r#"Note hook not impelemnted"#),
+                GitlabHookRequest::Pipeline(_) => HttpResponse::BadRequest().body(r#"Note hook not impelemnted"#),
+            }.await
+        } else {
+            HttpResponse::BadRequest().body(r#"Wrong value of header: "X-Gitlab-Token""#).await
+        }
+    } else {
+        HttpResponse::BadRequest().body(r#"Missed requared headers: "X-Gitlab-Event", "X-Gitlab-Token""#).await
+    }
 }
 
 pub async fn server() -> Server {
     let mut listenfd = ListenFd::from_env();
 
-    // let api_version = config.get_str("version").unwrap() as ApiVersion;
-    //
-    // let image_service: Arc<Mutex<ImageService>> = {
-    //     let service = new_arango_image_service().await;
-    //     Arc::new(Mutex::new(service))
-    // };
-    //
-    // let api_version: Arc<ApiVersion> = {
-    //     let version = env!("CARGO_PKG_VERSION").to_string();
-    //     let api_version = ApiVersion { version };
-    //     Arc::new(api_version)
-    // };
+    let youtrack_service = {
+        let base_url = settings::get_str("youtrack.url").unwrap();
+        let token = settings::get_str("youtrack.token").unwrap();
+        let client = YoutrackClientImpl::new(base_url, token).await.unwrap();
+        let service = YoutrackService::new(client);
+        let rw_lock = RwLock::new(service);
+        Arc::new(rw_lock)
+    };
+
+    let webhook_service = {
+        let service = SimpleWebhookService::new(youtrack_service.clone());
+        crate::service::new_service(service)
+    };
 
     let mut server = HttpServer::new(move || {
         App::new()
@@ -67,6 +72,9 @@ pub async fn server() -> Server {
             // .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
             .service(index)
+            .service(merge_request)
+            .data(youtrack_service.clone())
+            .data(webhook_service.clone())
         // .service(load_image_base64)
         // .service(load_image_multipart)
         // .service(load_image_link)
@@ -89,6 +97,7 @@ pub async fn server() -> Server {
         // .service(web::resource("/test1.html").to(|| async { "Test\r\n" }))
     });
 
+    let result = settings::get_str("app.grok.patterns.task_id").unwrap();
     let server = if let Some(listener) = listenfd.take_tcp_listener(0).unwrap() {
         server.listen(listener).unwrap()
     } else {

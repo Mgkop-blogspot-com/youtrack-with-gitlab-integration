@@ -55,7 +55,8 @@ impl SimpleWebhookService {
         let task_id = {
             match MERGE_REQUEST_TITLE_PATTERN.match_against(merge_request_hook.object_attributes.title.as_ref()) {
                 Some(matches) => match matches.get("TASK") {
-                    Some(task_id) => Some(format!("PMS-{:?}", task_id)),
+                    Some(task_id) => Some(format!("SSP-{}", task_id.parse::<u32>().unwrap())),
+                    // Some(task_id) => Some(format!("PMS-{:?}", task_id)),
                     _ => None
                 }
                 _ => None
@@ -64,8 +65,8 @@ impl SimpleWebhookService {
         let state = merge_request_hook.object_attributes.state;
 
         if let (Some(MergeRequestAction::Merge), Some(task_id), MergeRequestState::Merged) = (merge_request_action, task_id, state) {
-            self.youtrack_service.clone().write().await
-                .update_status(task_id);
+            let mut service = self.youtrack_service.write().await;
+            service.update_status(task_id).await;
         }
 
         if let Some(true) = merge_request_hook.object_attributes.merge_when_pipeline_succeeds {
