@@ -5,7 +5,7 @@ pub mod youtrack_service;
 pub mod webhook_service;
 pub mod gitlab_service;
 pub mod grok_service;
-pub mod patter_builder_service;
+pub mod pattern_builder_service;
 
 pub type Service<T> = Arc<RwLock<T>>;
 

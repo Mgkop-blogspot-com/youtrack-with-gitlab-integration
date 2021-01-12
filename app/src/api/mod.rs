@@ -14,7 +14,8 @@ use actix_web::body::Body;
 use actix_web::client::HttpError;
 use crate::service::webhook_service::SimpleWebhookService;
 use crate::service::Service;
-use crate::service::patter_builder_service::mustache::MustachePatternBuilderService;
+use crate::service::pattern_builder_service::mustache::MustachePatternBuilderService;
+use crate::service::grok_service::GrokService;
 
 const MAX_SIZE: usize = 262_144;
 
@@ -53,6 +54,13 @@ pub async fn merge_request(request: HttpRequest, hook: web::Json<GitlabHookReque
 pub async fn server() -> Server {
     let mut listenfd = ListenFd::from_env();
 
+    let grok_service = {
+        let custom_patterns = crate::settings::get_map("app.grok.patterns").unwrap();
+        let merge_request_title_pattern = crate::settings::get_str("gitlab.merge-request.title-pattern").unwrap();
+        let service = GrokService::new(custom_patterns, merge_request_title_pattern);
+        crate::service::new_service(service)
+    };
+
     let youtrack_service = {
         let base_url = settings::get_str("youtrack.url").unwrap();
         let token = settings::get_str("youtrack.token").unwrap();
@@ -67,7 +75,10 @@ pub async fn server() -> Server {
     };
 
     let webhook_service = {
-        let service = SimpleWebhookService::new(youtrack_service.clone(), pattern_builder_service.clone());
+        let service = SimpleWebhookService::new(
+            youtrack_service.clone(), pattern_builder_service.clone(),
+            grok_service.clone(),
+        );
         crate::service::new_service(service)
     };
 

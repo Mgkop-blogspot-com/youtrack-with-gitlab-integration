@@ -1,18 +1,29 @@
 use std::collections::HashMap;
-use grok::Grok;
+use grok::{Grok, Pattern};
+use std::sync::Arc;
 
-#[derive(Default)]
 pub struct GrokService {
-    grok: Grok
+    custom_patterns: HashMap<String, String>,
+    merge_request_title_pattern: Arc<grok::Pattern>,
 }
 
 impl GrokService {
-    pub fn new(patterns: HashMap<String, String>) -> GrokService {
+    pub fn new(patterns: HashMap<String, String>, merge_request_title_pattern: String) -> GrokService {
+        let custom_patterns = patterns.clone();
         let mut grok = Grok::with_patterns();
         for (key, value) in patterns {
             grok.insert_definition(key, value)
         }
-        GrokService { grok }
+
+        let merge_request_title_pattern = {
+            let pattern = grok.compile(merge_request_title_pattern.as_str(), false).unwrap();
+            Arc::new(pattern)
+        };
+        GrokService { custom_patterns, merge_request_title_pattern }
+    }
+
+    pub async fn get_merge_request_title_pattern(&self) -> Arc<Pattern> {
+        self.merge_request_title_pattern.clone()
     }
 }
 

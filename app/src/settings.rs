@@ -24,10 +24,11 @@ pub fn get_int(key: &str) -> Result<i64, ConfigError> {
     SETTINGS.get_int(key)
 }
 
-pub fn get_map<T>(key: &str) -> Result<HashMap<String, T>, ConfigError> where T: From<config::Value> {
+pub fn get_map(key: &str) -> Result<HashMap<String, String>, ConfigError> {
+// pub fn get_map<T>(key: &str) -> Result<HashMap<String, T>, ConfigError> where T: From<config::Value> {
     SETTINGS.get_table(key)
         .map(|table| table.iter()
-            .map(|(key, value)| (key.clone(), T::from(value.clone()))
+            .map(|(key, value)| (key.clone(), value.to_string())
             ).collect())
 }
 

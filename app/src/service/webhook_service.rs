@@ -9,13 +9,15 @@ use std::borrow::BorrowMut;
 use tokio::sync::RwLock;
 use snafu::{ensure, Backtrace, ErrorCompat, ResultExt, Snafu};
 use crate::service::Service;
-use crate::service::patter_builder_service::mustache::MustachePatternBuilderService as PatternService;
+use crate::service::pattern_builder_service::mustache::MustachePatternBuilderService as PatternService;
 use std::collections::HashMap;
+use crate::service::grok_service::GrokService;
 
 /// This implementation doesn't support grok patterns
 pub struct SimpleWebhookService {
     youtrack_service: Service<YoutrackService>,
     builder_service: Service<PatternService>,
+    grok_service: Service<GrokService>,
 }
 
 // #[derive(Debug, Snafu)]
@@ -39,8 +41,9 @@ lazy_static! {
 }
 
 impl SimpleWebhookService {
-    pub fn new(youtrack_service: Service<YoutrackService>, builder_service: Service<PatternService>) -> SimpleWebhookService {
-        SimpleWebhookService { youtrack_service, builder_service }
+    pub fn new(youtrack_service: Service<YoutrackService>, builder_service: Service<PatternService>,
+               grok_service: Service<GrokService>) -> SimpleWebhookService {
+        SimpleWebhookService { youtrack_service, builder_service, grok_service }
     }
 
     pub async fn process_web_hook(&mut self, webhook: GitlabHookRequest) -> Result<(), SimpleWebhookServiceError> {
@@ -58,7 +61,9 @@ impl SimpleWebhookService {
         let merge_request_action = merge_request_hook.object_attributes.action;
         let task_id = {
             let title = merge_request_hook.object_attributes.title;
-            match MERGE_REQUEST_TITLE_PATTERN.match_against(title.as_ref()) {
+
+            let grok_service = self.grok_service.read().await;
+            match grok_service.get_merge_request_title_pattern().await.match_against(title.as_ref()) {
                 Some(matches) => {
                     let mut captured_patterns = HashMap::new();
                     for (capture, name) in matches.iter() {
