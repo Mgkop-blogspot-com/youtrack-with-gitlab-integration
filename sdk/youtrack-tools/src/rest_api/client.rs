@@ -5,8 +5,10 @@ use std::sync::{Mutex, Arc};
 use hyper::Client;
 use hyper::client::HttpConnector;
 use tokio::time::Duration;
-use crate::rest_api::service::issues::fetch_issue_by_id;
+use crate::rest_api::service::issues::fetch_issue_by_id_res;
 use crate::rest_api::base::client::HttpClient;
+use crate::rest_api::error::Result as Res;
+use crate::rest_api::error::Error as YoutrackError;
 
 pub struct YoutrackClientImpl {
     client: Arc<HttpClient>,
@@ -24,7 +26,7 @@ pub trait YoutrackClient: Sync {
     // async fn users(&self) -> Vec<Box<dyn User>>;
     // async fn user(&self, name: NameType) -> Vec<Box<dyn User>>;
     // async fn tasks(&self) -> Vec<Box<dyn Task>>;
-    async fn issue(&self, name: NameType) -> Box<Issue>;
+    async fn issue(&self, name: NameType) -> Res<Box<Issue>> ;
     // async fn projects(&self) -> Vec<Box<dyn Project>>;
     // async fn project(&self, name: NameType) -> Box<dyn Project>;
 }
@@ -47,9 +49,9 @@ impl YoutrackClientImpl {
 
 #[async_trait]
 impl YoutrackClient for YoutrackClientImpl {
-    async fn issue(&self, name: NameType) -> Box<Issue> {
+    async fn issue(&self, name: NameType) -> Res<Box<Issue>> {
         let http_client = HttpClient::new(self.config.clone());
-        let origin = fetch_issue_by_id(&http_client, name.clone()).await;
-        box Issue::new(http_client, origin)
+        let origin = fetch_issue_by_id_res(&http_client, name.clone()).await;
+        origin.map(|origin_dto| box Issue::new(http_client, origin_dto))
     }
 }

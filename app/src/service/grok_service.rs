@@ -12,7 +12,8 @@ impl GrokService {
         let custom_patterns = patterns.clone();
         let mut grok = Grok::with_patterns();
         for (key, value) in patterns {
-            grok.insert_definition(key, value)
+            log::info!(r###"Adding custom grok pattern. Key: "{}", Value: "{}""###, key, value);
+            grok.insert_definition(key.to_uppercase(), value)
         }
 
         let merge_request_title_pattern = {

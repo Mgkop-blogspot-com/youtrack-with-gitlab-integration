@@ -2,8 +2,8 @@ app:
   port: 8081
   grok:
     patterns:
-      task_id: "\\[\\w\\d-]+"
-      task_title: ".+"
+      TASK_ID: "[\\w\\d-]+"
+      TASK_TITLE: ".+"
 youtrack:
   url: "http://localhost:10100"
   token: "perm:c2VnZQ==.NDUtMA==.BwWbdAkDk6Dr6rKnoVD3Rg5PStkMFE"
@@ -11,5 +11,5 @@ gitlab:
   url: "https://git.let4.me"
   token: "secret_token"
   merge-request:
-    title-pattern: "%{TASK_ID} %{TITLE}"
+    title-pattern: "%{TASK_ID} %{TASK_TITLE}"
     youtrack-task-id-builder: "SSP-{{TASK_ID}}"

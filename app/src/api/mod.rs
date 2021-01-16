@@ -113,7 +113,6 @@ pub async fn server() -> Server {
         // .service(web::resource("/test1.html").to(|| async { "Test\r\n" }))
     });
 
-    let result = settings::get_str("app.grok.patterns.task_id").unwrap();
     let server = if let Some(listener) = listenfd.take_tcp_listener(0).unwrap() {
         server.listen(listener).unwrap()
     } else {

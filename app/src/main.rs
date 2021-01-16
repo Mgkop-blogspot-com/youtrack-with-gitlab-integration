@@ -31,12 +31,14 @@ async fn youtrack_ops() -> () {
     let host = "http://localhost:10100".to_string();
     let client_impl = youtrack_tools::rest_api::client::YoutrackClientImpl::new(host, token).await.unwrap();
 
-    let mut issue = client_impl.issue("SSP-7".to_string()).await;
-    issue.set_state(IssueStateType::ToVerify);
-    let new_description_text = indoc!("### New description 3
+    if let Ok(mut issue) = client_impl.issue("SSP-7".to_string()).await{
+        // let mut issue = client_impl.issue("SSP-7".to_string()).await;
+        issue.set_state(IssueStateType::ToVerify);
+        let new_description_text = indoc!("### New description 3
                                 Bugaga **from** __rust__
                                 [lol](google.com)");
-    issue.description = Some(new_description_text.to_string());
+        issue.description = Some(new_description_text.to_string());
 
-    let x = issue.save().await;
+        let x = issue.save().await;
+    }
 }

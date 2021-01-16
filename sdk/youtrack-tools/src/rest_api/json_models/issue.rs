@@ -498,5 +498,5 @@ pub struct IssueTag {
     query: String,
     is_updatable: bool,
     name: String,
-    id: Str,
+    id: String,
 }

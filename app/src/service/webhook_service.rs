@@ -52,7 +52,9 @@ impl SimpleWebhookService {
                 Ok(self.process_merge_request_hook(merge_request_hook).await)
             }
             GitlabHookRequest::Note(_) => Err(SimpleWebhookServiceError::NoteHookNotImplemented),
-            GitlabHookRequest::Pipeline(_) => Err(SimpleWebhookServiceError::PipelineHookNotImplemented)
+            GitlabHookRequest::Pipeline(_) => {
+                Err(SimpleWebhookServiceError::PipelineHookNotImplemented)
+            }
         };
         result
     }
