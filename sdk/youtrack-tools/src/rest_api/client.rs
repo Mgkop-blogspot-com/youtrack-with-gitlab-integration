@@ -5,10 +5,14 @@ use std::sync::{Mutex, Arc};
 use hyper::Client;
 use hyper::client::HttpConnector;
 use tokio::time::Duration;
-use crate::rest_api::service::issues::fetch_issue_by_id_res;
+use crate::rest_api::service::issues::fetch_issue_by_id;
 use crate::rest_api::base::client::HttpClient;
 use crate::rest_api::error::Result as Res;
 use crate::rest_api::error::Error as YoutrackError;
+use crate::rest_api::tag::IssueTag;
+use crate::rest_api::json_models::issue::IssueTagDto;
+use crate::rest_api::base::ops::BaseOps;
+use crate::rest_api::service::tags::fetch::fetch_tag_by_name;
 
 pub struct YoutrackClientImpl {
     client: Arc<HttpClient>,
@@ -26,7 +30,10 @@ pub trait YoutrackClient: Sync {
     // async fn users(&self) -> Vec<Box<dyn User>>;
     // async fn user(&self, name: NameType) -> Vec<Box<dyn User>>;
     // async fn tasks(&self) -> Vec<Box<dyn Task>>;
-    async fn issue(&self, name: NameType) -> Res<Box<Issue>> ;
+    async fn issue(&self, name: NameType) -> Res<Box<Issue>>;
+    async fn new_tag(&self, project_id: String, name: NameType) -> Res<Box<IssueTag>>;
+    async fn find_or_new_tag(&self, project_id: String, name: NameType) -> Res<Box<IssueTag>>;
+    async fn tag(&self, project_id: String, name: NameType) -> Res<Box<IssueTag>>;
     // async fn projects(&self) -> Vec<Box<dyn Project>>;
     // async fn project(&self, name: NameType) -> Box<dyn Project>;
 }
@@ -51,7 +58,35 @@ impl YoutrackClientImpl {
 impl YoutrackClient for YoutrackClientImpl {
     async fn issue(&self, name: NameType) -> Res<Box<Issue>> {
         let http_client = HttpClient::new(self.config.clone());
-        let origin = fetch_issue_by_id_res(&http_client, name.clone()).await;
-        origin.map(|origin_dto| box Issue::new(http_client, origin_dto))
+        let origin = fetch_issue_by_id(&http_client, name.clone()).await;
+        origin.map(|origin_dto| {
+            let project_id = origin_dto.project.id.clone();
+            box Issue::new(http_client, origin_dto, project_id)
+        })
+    }
+
+    async fn new_tag(&self, project_id: String, name: NameType) -> Res<Box<IssueTag>> {
+        let http_client = HttpClient::new(self.config.clone());
+        let origin = IssueTagDto::new(name);
+        let mut tag = IssueTag::new(http_client, origin, project_id);
+        let new = tag.save().await;
+        Ok(box tag)
+    }
+
+    async fn find_or_new_tag(&self, project_id: String, name: NameType) -> Res<Box<IssueTag>> {
+        let old_tag = self.tag(project_id.clone(), name.clone()).await;
+        let new_tag = self.new_tag(project_id, name).await;
+        old_tag.or_else(|e| new_tag)
+    }
+
+    async fn tag(&self, project_id: String, name: NameType) -> Res<Box<IssueTag>> {
+        let http_client = HttpClient::new(self.config.clone());
+        fetch_tag_by_name(&http_client, project_id.clone(), name.clone()).await
+            .map(|origin| {
+                let http_client = HttpClient::new(self.config.clone());
+                let tag = IssueTag::new(http_client, origin, project_id);
+                tag
+            })
+            .map(|it| box it)
     }
 }

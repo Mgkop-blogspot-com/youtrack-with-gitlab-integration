@@ -2,8 +2,8 @@ use serde::{Serialize, Deserialize};
 use async_trait::async_trait;
 use crate::rest_api::base::{BaseInfo, ops::BaseOps, NameType, Ideantifier};
 use crate::rest_api::base::wrap::ActiveRecordWrap;
-use crate::rest_api::json_models::issue::IssueDto;
-use crate::rest_api::service::issues::{persist_changes, fetch_issue_by_id_res};
+use crate::rest_api::json_models::issue::{IssueDto, IssueTagDto};
+use crate::rest_api::service::issues::{persist_changes, fetch_issue_by_id};
 use std::ops::{Deref, DerefMut};
 use std::sync::Arc;
 use crate::rest_api::json_models::issue::field::custom_field::{IssueCustomField, IssueStatus, StateIssueCustomField};
@@ -56,7 +56,7 @@ impl BaseInfo for Issue {
 #[async_trait]
 impl BaseOps for Issue {
     async fn update(&mut self) -> &mut Self {
-        fetch_issue_by_id_res(&self.http_client, self.origin.id.clone()).await
+        fetch_issue_by_id(&self.http_client, self.origin.id.clone()).await
             .map(|new_origin|self.refresh(new_origin));
         self
     }

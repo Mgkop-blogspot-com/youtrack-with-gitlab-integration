@@ -7,6 +7,7 @@ app:
 youtrack:
   url: "http://localhost:10100"
   token: "perm:c2VnZQ==.NDUtMA==.BwWbdAkDk6Dr6rKnoVD3Rg5PStkMFE"
+  project_id: "0-2"
 gitlab:
   url: "https://git.let4.me"
   token: "secret_token"

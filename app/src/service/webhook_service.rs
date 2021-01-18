@@ -88,7 +88,7 @@ impl SimpleWebhookService {
 
         if let (Some(MergeRequestAction::Merge), Some(task_id), MergeRequestState::Merged) = (merge_request_action, task_id, state) {
             let mut service = self.youtrack_service.write().await;
-            service.update_status(task_id).await;
+            service.update_status(task_id.clone()).await;
         }
 
         if let Some(true) = merge_request_hook.object_attributes.merge_when_pipeline_succeeds {

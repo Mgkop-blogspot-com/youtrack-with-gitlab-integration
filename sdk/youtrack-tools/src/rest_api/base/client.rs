@@ -55,9 +55,10 @@ impl HttpClient {
 
     pub async fn post_data<T>(&self, path: String, data: T) -> hyper::Result<Response<Body>> where T: Clone+Serialize {
         let uri = self.to_uri(path);
-        log::info!("POST Request: {}", &uri);
+        log::info!("POST Request: {}... more 100 symbols", &uri[0..100]);
 
         let body = serde_json::to_string(&data).unwrap();
+        log::trace!("POST Request: {} \nbody: {}", &uri, &body);
         let request = hyper::Request::builder()
             .method(Method::POST)
             .uri(uri)

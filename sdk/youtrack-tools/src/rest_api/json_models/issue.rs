@@ -2,6 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::rest_api::json_models::issue::field::{ProjectCustomFieldType, ProjectCustomField, FieldColor};
 use crate::rest_api::json_models::issue::field::custom_field::{IssueCustomField, StateIssueCustomField};
 use crate::rest_api::json_models::issue::field::value::User;
+use crate::rest_api::json_models::project::ProjectDto;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -24,10 +25,10 @@ pub struct IssueDto {
     pub is_draft: bool,
     // visibility
     pub description: Option<String>,
-    // tags
+    pub tags: Option<Vec<IssueTagDto>>,
     // created
     // links
-    // project
+    pub project: ProjectDto,
     pub uses_markdown: bool,
     // updated
     // watchers
@@ -35,7 +36,6 @@ pub struct IssueDto {
     pub id: String,
     #[serde(alias = "$type")]
     pub model_type: String,
-    pub tags: Option<Vec<IssueTag>>,
 }
 
 impl IssueDto {
@@ -490,13 +490,67 @@ pub mod field {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct IssueTag {
-    is_usable: bool,
-    color: FieldColor,
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct IssueTagDto {
+    pub is_usable: Option<bool>,
+    pub color: Option<FieldColor>,
     // owner:
-    query: String,
-    is_updatable: bool,
-    name: String,
-    id: String,
+    pub query: Option<String>,
+    pub is_updatable: Option<bool>,
+    pub is_shareable: Option<bool>,
+    pub name: String,
+    pub id: Option<String>,
+    #[serde(alias = "$type")]
+    #[serde(rename = "$type")]
+    pub model_type: String,
+}
+
+impl IssueTagDto {
+    pub fn new(name: String) -> IssueTagDto {
+        let color = Some(13).map(|it| FieldColor::FieldStyle { id: it.to_string() });
+        let model_type = "IssueTag".to_string();
+        IssueTagDto { name, color, model_type, ..IssueTagDto::default() }
+    }
+}
+
+#[deprecated(note = "use issue::IssueTagDto")]
+pub mod tag {
+    use crate::rest_api::json_models::issue::field::value::User;
+    use crate::rest_api::json_models::issue::field::FieldColor;
+    use serde::{Serialize, Deserialize};
+
+    #[serde(rename_all = "camelCase")]
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct Root {
+        pub tag_sharing_settings: Option<TagSharingSettings>,
+        pub untag_on_resolve: Option<bool>,
+        pub is_usable: bool,
+        pub color: FieldColor,
+        pub owner: Option<User>,
+        pub query: String,
+        pub is_updatable: bool,
+        pub is_deletable: Option<bool>,
+        pub is_shareable: Option<bool>,
+        pub read_sharing_settings: Option<TagSharingSettings>,
+        pub update_sharing_settings: Option<TagSharingSettings>,
+        pub issues_url: Option<String>,
+        pub pinned: Option<bool>,
+        pub name: String,
+        pub id: String,
+    }
+
+    #[serde(rename_all = "camelCase")]
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct TagSharingSettings {
+        pub permission_based_tag_access: bool,
+        pub permitted_groups: Vec<::serde_json::Value>,
+        pub permitted_users: Vec<::serde_json::Value>,
+    }
+
+    #[serde(rename_all = "camelCase")]
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    pub struct WatchFolderSharingSettings {
+        pub permitted_groups: Vec<::serde_json::Value>,
+        pub permitted_users: Vec<::serde_json::Value>,
+    }
 }
