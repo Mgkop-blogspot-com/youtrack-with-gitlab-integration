@@ -31,8 +31,8 @@ pub trait YoutrackClient: Sync {
     // async fn user(&self, name: NameType) -> Vec<Box<dyn User>>;
     // async fn tasks(&self) -> Vec<Box<dyn Task>>;
     async fn issue(&self, name: NameType) -> Res<Box<Issue>>;
-    async fn new_tag(&self, project_id: String, name: NameType) -> Res<Box<IssueTag>>;
-    async fn find_or_new_tag(&self, project_id: String, name: NameType) -> Res<Box<IssueTag>>;
+    async fn new_tag(&self, project_id: String, name: NameType, style: String) -> Res<Box<IssueTag>> ;
+    async fn find_or_new_tag(&self, project_id: String, name: NameType, style: String) -> Res<Box<IssueTag>>;
     async fn tag(&self, project_id: String, name: NameType) -> Res<Box<IssueTag>>;
     // async fn projects(&self) -> Vec<Box<dyn Project>>;
     // async fn project(&self, name: NameType) -> Box<dyn Project>;
@@ -65,17 +65,17 @@ impl YoutrackClient for YoutrackClientImpl {
         })
     }
 
-    async fn new_tag(&self, project_id: String, name: NameType) -> Res<Box<IssueTag>> {
+    async fn new_tag(&self, project_id: String, name: NameType, style: String) -> Res<Box<IssueTag>> {
         let http_client = HttpClient::new(self.config.clone());
-        let origin = IssueTagDto::new(name);
+        let origin = IssueTagDto::new(name, style);
         let mut tag = IssueTag::new(http_client, origin, project_id);
         let new = tag.save().await;
         Ok(box tag)
     }
 
-    async fn find_or_new_tag(&self, project_id: String, name: NameType) -> Res<Box<IssueTag>> {
+    async fn find_or_new_tag(&self, project_id: String, name: NameType, style: String) -> Res<Box<IssueTag>> {
         let old_tag = self.tag(project_id.clone(), name.clone()).await;
-        let new_tag = self.new_tag(project_id, name).await;
+        let new_tag = self.new_tag(project_id, name, style).await;
         old_tag.or_else(|e| new_tag)
     }
 

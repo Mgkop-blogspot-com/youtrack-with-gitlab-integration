@@ -8,9 +8,16 @@ youtrack:
   url: "http://localhost:10100"
   token: "perm:c2VnZQ==.NDUtMA==.BwWbdAkDk6Dr6rKnoVD3Rg5PStkMFE"
   project_id: "0-2"
+  labels:
+    on-comment: on-comment-default
 gitlab:
   url: "https://git.let4.me"
   token: "secret_token"
   merge-request:
     title-pattern: "%{TASK_ID} %{TASK_TITLE}"
     youtrack-task-id-builder: "SSP-{{TASK_ID}}"
+labels:
+  on-comment-default: "default comment style"
+  on-comment-green:
+    title: "green comment"
+    style: 13

@@ -12,6 +12,8 @@ use crate::service::Service;
 use crate::service::pattern_builder_service::mustache::MustachePatternBuilderService as PatternService;
 use std::collections::HashMap;
 use crate::service::grok_service::GrokService;
+use gitlab_tools::models::hooks::note::NoteHook;
+use crate::settings;
 
 /// This implementation doesn't support grok patterns
 pub struct SimpleWebhookService {
@@ -51,7 +53,9 @@ impl SimpleWebhookService {
             GitlabHookRequest::MergeRequest(merge_request_hook) => {
                 Ok(self.process_merge_request_hook(merge_request_hook).await)
             }
-            GitlabHookRequest::Note(_) => Err(SimpleWebhookServiceError::NoteHookNotImplemented),
+            GitlabHookRequest::Note(note_hook) => {
+                Ok(self.process_note_hook(note_hook).await)
+            }
             GitlabHookRequest::Pipeline(_) => {
                 Err(SimpleWebhookServiceError::PipelineHookNotImplemented)
             }
@@ -61,29 +65,7 @@ impl SimpleWebhookService {
 
     pub async fn process_merge_request_hook(&mut self, merge_request_hook: MergeRequestHook) {
         let merge_request_action = merge_request_hook.object_attributes.action;
-        let task_id = {
-            let title = merge_request_hook.object_attributes.title;
-
-            let grok_service = self.grok_service.read().await;
-            match grok_service.get_merge_request_title_pattern().await.match_against(title.as_ref()) {
-                Some(matches) => {
-                    let mut captured_patterns = HashMap::new();
-                    for (capture, name) in matches.iter() {
-                        // println!("capture: {:?}, names: {:?}", capture, names);
-                        captured_patterns.insert(capture.to_string(), name.to_string());
-                    }
-
-                    let task_readable_identifier = if let Some(_) = crate::settings::get_str("gitlab.merge-request.youtrack-task-id-builder").ok() {
-                        self.builder_service.clone().read().await.youtrack_task_build(captured_patterns)
-                    } else {
-                        title.clone()
-                    };
-
-                    Some(task_readable_identifier)
-                }
-                _ => None
-            }
-        };
+        let task_id = self.get_task_id(merge_request_hook.object_attributes.title).await;
         let state = merge_request_hook.object_attributes.state;
 
         if let (Some(MergeRequestAction::Merge), Some(task_id), MergeRequestState::Merged) = (merge_request_action, task_id, state) {
@@ -93,6 +75,39 @@ impl SimpleWebhookService {
 
         if let Some(true) = merge_request_hook.object_attributes.merge_when_pipeline_succeeds {
             // set label pipeline in progress
+        }
+    }
+
+    async fn get_task_id(&mut self, title: String) -> Option<String> {
+        let grok_service = self.grok_service.read().await;
+        match grok_service.get_merge_request_title_pattern().await.match_against(title.as_ref()) {
+            Some(matches) => {
+                let mut captured_patterns = HashMap::new();
+                for (capture, name) in matches.iter() {
+                    // println!("capture: {:?}, names: {:?}", capture, names);
+                    captured_patterns.insert(capture.to_string(), name.to_string());
+                }
+
+                let task_readable_identifier = if let Some(_) = crate::settings::get_str("gitlab.merge-request.youtrack-task-id-builder").ok() {
+                    self.builder_service.clone().read().await.youtrack_task_build(captured_patterns)
+                } else {
+                    title.clone()
+                };
+
+                Some(task_readable_identifier)
+            }
+            _ => None
+        }
+    }
+
+    pub async fn process_note_hook(&mut self, note_hook: NoteHook) {
+        let merge_request_title = note_hook.merge_request.title.clone();
+
+        if let Some(task_id) = self.get_task_id(merge_request_title).await {
+            let mut service = self.youtrack_service.write().await;
+            let project_id = settings::get_str("youtrack.project_id").unwrap();
+            let on_comment_label_name = settings::get_str("youtrack.labels.on-comment").unwrap();
+            service.add_configured_tag(project_id, task_id, on_comment_label_name).await;
         }
     }
 }

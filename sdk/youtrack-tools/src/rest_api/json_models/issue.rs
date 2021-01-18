@@ -506,8 +506,8 @@ pub struct IssueTagDto {
 }
 
 impl IssueTagDto {
-    pub fn new(name: String) -> IssueTagDto {
-        let color = Some(13).map(|it| FieldColor::FieldStyle { id: it.to_string() });
+    pub fn new(name: String, style: String) -> IssueTagDto {
+        let color = Some(style).map(|style_id| FieldColor::FieldStyle { id: style_id });
         let model_type = "IssueTag".to_string();
         IssueTagDto { name, color, model_type, ..IssueTagDto::default() }
     }

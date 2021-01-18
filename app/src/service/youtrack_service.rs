@@ -40,10 +40,13 @@ impl YoutrackService {
     /// Example:
     /// let project_id = settings::get_str("youtrack.project_id").unwrap();
     /// service.add_tag(project_id, task_id, "hello friend!9999".to_string()).await;
-    pub async fn add_tag(&mut self, project_id: String, task_id: String, tag_name: String) {
+    pub async fn add_configured_tag(&mut self, project_id: String, task_id: String, tag_name: String) {
+        let style = {
+            "13".to_string()
+        };
         let results = (
             self.client.issue(task_id.clone()).await,
-            self.client.find_or_new_tag(project_id, tag_name.clone()).await
+            self.client.find_or_new_tag(project_id, tag_name.clone(), style).await
         );
         match results {
             (Ok(mut issue), Ok(mut tag)) => {
