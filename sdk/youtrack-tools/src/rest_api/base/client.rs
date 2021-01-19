@@ -41,7 +41,8 @@ impl HttpClient {
     /// Uses GET method and support auth using Bearer and Auth token
     pub async fn fetch_data(&self, path: String) -> hyper::Result<Response<Body>> {
         let uri = self.to_uri(path);
-        log::info!("Fetching data from uri: {}", &uri);
+        log::info!("Fetching data from uri: {}...", &uri[0..100]);
+        log::trace!("Fetching data from uri: {}", &uri);
 
         let request = hyper::Request::builder()
             .uri(uri)
@@ -55,7 +56,7 @@ impl HttpClient {
 
     pub async fn post_data<T>(&self, path: String, data: T) -> hyper::Result<Response<Body>> where T: Clone+Serialize {
         let uri = self.to_uri(path);
-        log::info!("POST Request: {}... more 100 symbols", &uri[0..100]);
+        log::info!("POST Request: {}...", &uri[0..100]);
 
         let body = serde_json::to_string(&data).unwrap();
         log::trace!("POST Request: {} \nbody: {}", &uri, &body);

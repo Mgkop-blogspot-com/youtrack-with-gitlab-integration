@@ -40,8 +40,12 @@ pub async fn merge_request(request: HttpRequest, hook: web::Json<GitlabHookReque
                     hook_service.process_merge_request_hook(merge_request_hook).await;
                     HttpResponse::Ok().body("done")
                 }
-                GitlabHookRequest::Note(_) => HttpResponse::BadRequest().body(r#"Note hook not impelemnted"#),
-                GitlabHookRequest::Pipeline(_) => HttpResponse::BadRequest().body(r#"Note hook not impelemnted"#),
+                GitlabHookRequest::Note(note_hook) => {
+                    let mut hook_service = hook_service.write().await;
+                    hook_service.process_note_hook(note_hook).await;
+                    HttpResponse::Ok().body("done")
+                },
+                GitlabHookRequest::Pipeline(_) => HttpResponse::BadRequest().body(r#"Pipeline hook not impelemnted"#),
             }.await
         } else {
             HttpResponse::BadRequest().body(r#"Wrong value of header: "X-Gitlab-Token""#).await

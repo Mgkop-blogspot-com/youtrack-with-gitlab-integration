@@ -63,6 +63,17 @@ impl SimpleWebhookService {
         result
     }
 
+    pub async fn process_note_hook(&mut self, note_hook: NoteHook) {
+        let merge_request_title = note_hook.merge_request.title.clone();
+
+        if let Some(task_id) = self.get_task_id(merge_request_title).await {
+            let mut service = self.youtrack_service.write().await;
+            let project_id = settings::get_str("youtrack.project_id").unwrap();
+            let tag_definition = settings::get_label_definition("youtrack.labels.on-comment").unwrap();
+            service.add_configured_tag(project_id, task_id, tag_definition).await;
+        }
+    }
+
     pub async fn process_merge_request_hook(&mut self, merge_request_hook: MergeRequestHook) {
         let merge_request_action = merge_request_hook.object_attributes.action;
         let task_id = self.get_task_id(merge_request_hook.object_attributes.title).await;
@@ -97,17 +108,6 @@ impl SimpleWebhookService {
                 Some(task_readable_identifier)
             }
             _ => None
-        }
-    }
-
-    pub async fn process_note_hook(&mut self, note_hook: NoteHook) {
-        let merge_request_title = note_hook.merge_request.title.clone();
-
-        if let Some(task_id) = self.get_task_id(merge_request_title).await {
-            let mut service = self.youtrack_service.write().await;
-            let project_id = settings::get_str("youtrack.project_id").unwrap();
-            let on_comment_label_name = settings::get_str("youtrack.labels.on-comment").unwrap();
-            service.add_configured_tag(project_id, task_id, on_comment_label_name).await;
         }
     }
 }

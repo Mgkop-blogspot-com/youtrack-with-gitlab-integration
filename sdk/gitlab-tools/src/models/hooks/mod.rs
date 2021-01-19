@@ -37,9 +37,9 @@ impl<'de> Deserialize<'de> for GitlabHookRequest {
             None => {
                 return Err(D::Error::missing_field("object_kind"));
             }
-        };
+        }.clone();
 
-        match kind.as_ref() {
+        match kind.clone().as_str() {
             "merge_request" => serde_json::from_value(object).map(|hook| GitlabHookRequest::MergeRequest(hook)),
             "note" => serde_json::from_value(object).map(|hook| GitlabHookRequest::Note(hook)),
             "pipeline" => serde_json::from_value(object).map(|hook| GitlabHookRequest::Pipeline(hook)),
@@ -50,6 +50,7 @@ impl<'de> Deserialize<'de> for GitlabHookRequest {
                 ));
             }
         }.map_err(|err| {
+            log::info!("Can't deserialize webhook kind: {kind:?}, error: {error}", kind = &kind, error = &err);
                 D::Error::invalid_value(
                     Unexpected::Other("web hook"),
                     &format!("{:?}", err).as_str(),

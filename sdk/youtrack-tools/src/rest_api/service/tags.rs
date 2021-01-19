@@ -35,7 +35,7 @@ pub mod fetch {
             _ if status_code.is_success() => hyper::body::to_bytes(body).await
                 .map_err(|e| YoutrackError::HttpError(e))
                 .and_then(|bytes| {
-                    log::info!("fetched issue by id: {}", String::from_utf8_lossy(bytes.bytes()));
+                    log::trace!("fetched issue with body: {}", String::from_utf8_lossy(bytes.bytes()));
                     serde_json::from_slice::<Vec<IssueTagDto>>(&bytes).map_err(|e| YoutrackError::ConverterError(e))
                 }),
             status => Err(YoutrackError::empty_list()),
@@ -68,9 +68,6 @@ pub async fn persist_changes(client: &HttpClient, origin_dto: Arc<IssueTagDto>, 
                                            tag_id = tag_id))
             .unwrap_or("/api/issueFolders?$top=-1&fields=$type,color(id),id,isDeletable,isShareable,isUpdatable,isUsable,issuesUrl,name,owner($type,id,isLocked,login,name,ringId),pinned,query,readSharingSettings(permissionBasedTagAccess,permittedGroups(id,name),permittedUsers($type,id,login,name,ringId)),tagSharingSettings(permissionBasedTagAccess,permittedGroups(id,name),permittedUsers($type,id,login,name,ringId)),untagOnResolve,updateSharingSettings(permissionBasedTagAccess,permittedGroups(id,name),permittedUsers($type,id,isLocked,login,name,ringId))&sort=true".to_string());
 
-        let result = serde_json::to_string(&modified_dto).unwrap();
-        println!("req body: {}", result);
-
         let (Parts { status: status_code, .. }, body): (Parts, Body) = client.post_data(path.clone(), modified_dto).await.unwrap().into_parts();
 
         let body_bytes_res = hyper::body::to_bytes(body).await
@@ -78,7 +75,7 @@ pub async fn persist_changes(client: &HttpClient, origin_dto: Arc<IssueTagDto>, 
 
         tag_dto = match status_code.as_u16() {
             _ if status_code.is_success() => body_bytes_res.and_then(|bytes| {
-                log::info!("fetched issue by id: {}", String::from_utf8_lossy(bytes.bytes()));
+                log::trace!("fetched issue with body: {}", String::from_utf8_lossy(bytes.bytes()));
                 serde_json::from_slice::<IssueTagDto>(&bytes).map_err(|e| YoutrackError::ConverterError(e))
             }),
             400u16 =>{

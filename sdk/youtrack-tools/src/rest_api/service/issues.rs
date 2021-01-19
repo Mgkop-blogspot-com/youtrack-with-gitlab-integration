@@ -22,7 +22,7 @@ pub async fn fetch_issue_by_id(client: &HttpClient, id: Ideantifier) -> Res<Issu
         _ if status_code.is_success() => hyper::body::to_bytes(body).await
             .map_err(|e| YoutrackError::HttpError(e))
             .and_then(|bytes| {
-                log::info!("fetched issue by id: {}", String::from_utf8_lossy(bytes.bytes()));
+                log::trace!("fetched issue with body: {}", String::from_utf8_lossy(bytes.bytes()));
                 serde_json::from_slice(&bytes).map_err(|e| YoutrackError::ConverterError(e))
             }),
         status  => Err(YoutrackError::not_found(id)),
@@ -47,7 +47,6 @@ pub async fn persist_changes(client: &HttpClient, origin_dto: Arc<IssueDto>, mod
         issue_dto = hyper::body::to_bytes(body).await
             .map(|bytes| {
                 let x = str::from_utf8(&bytes).unwrap();
-                println!("{}", x);
                 serde_json::from_slice(&bytes)
             })
             .unwrap()
